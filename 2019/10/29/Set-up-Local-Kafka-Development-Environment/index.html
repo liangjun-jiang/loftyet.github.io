@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://flinkinpractice.com">
-  <title>Run Flink App Jar | Flink in Practice</title>
+  <title>Set up Local Kafka Development Environment | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+  <meta name="description" content="In this tutorial, we will walk through one way to set up a local Kafka development environment, and demonstrate some common commands to use Kafka. We belive those commands are important for you later">
 <meta name="keywords" content="Flink">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Run Flink App Jar">
-<meta property="og:url" content="http:&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Run-Flink-App-Jar&#x2F;index.html">
+<meta property="og:title" content="Set up Local Kafka Development Environment">
+<meta property="og:url" content="http:&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Set-up-Local-Kafka-Development-Environment&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+<meta property="og:description" content="In this tutorial, we will walk through one way to set up a local Kafka development environment, and demonstrate some common commands to use Kafka. We belive those commands are important for you later">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-10-29T12:52:50.229Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;images&#x2F;part-iii&#x2F;chapter-10&#x2F;kafka-started.png">
+<meta property="og:updated_time" content="2019-10-29T19:29:35.730Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;images&#x2F;part-iii&#x2F;chapter-10&#x2F;kafka-started.png">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
   
@@ -164,37 +166,74 @@ ga('send', 'pageview');
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Run-Flink-App-Jar" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Set-up-Local-Kafka-Development-Environment" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Run Flink App Jar
+      Set up Local Kafka Development Environment
     </h1>
   
 
         
-        <a href="/2019/10/29/Run-Flink-App-Jar/" class="archive-article-date">
-  	<time datetime="2019-10-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+        <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" class="archive-article-date">
+  	<time datetime="2019-10-29T19:25:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Run-a-Flink-App-Jar"><a href="#Run-a-Flink-App-Jar" class="headerlink" title="Run a Flink App Jar"></a>Run a Flink App Jar</h1><p>For Flink application, there is one way to run a built jar file, also this is the way Flink recommended</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flink.streamwordcount ./target/your-target-jar-file.jar</span><br></pre></td></tr></table></figure>
+        <p>In this tutorial, we will walk through one way to set up a local Kafka development environment, and demonstrate some common commands to use Kafka. We belive those commands are important for you later to develop and debug your Flink applications.</p>
+<ol>
+<li><p>Download the Binary</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Download</span><br><span class="line">curl -o kafka_2.11-2.3.0.tgz http://www.trieuvan.com/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Untar </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf kafka_2.11-2.3.0.tgz</span><br><span class="line">cd ~/kafka_2.11-2.3.0/</span><br></pre></td></tr></table></figure></li>
+<li><p>Configuration </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/config/server.properties</span><br></pre></td></tr></table></figure>
 
-<p><code>com.flink.streamwordcount</code> is the main class of your Flink application.<br>Since we are used to run jar file with Java in this fashion. Just for fun, how could we still use this approach? </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar YOUR-TARGET-JAR-FILE.jar</span><br></pre></td></tr></table></figure>
-<p>To do so, we have modified your <code>pom.xml</code> a little bit, assumed you are using Flink template to generate Intelli J project<br>First of all, you might have to take <code>org.slf4j.*</code> and <code>log4j</code> from the exclude list</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">artifactSet</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">excludes</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>org.apache.flink:force-shading<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>com.google.code.findbugs:jsr305<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;org.slf4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;log4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">excludes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">artifactSet</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Second, you need to add the following line in the <code>&lt;transformers&gt;</code> section.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transformer</span> <span class="attr">implementation</span>=<span class="string">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">resource</span>&gt;</span>reference.conf<span class="tag">&lt;/<span class="name">resource</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transformer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">broker.id=1</span><br><span class="line">log.dir=~/kafka-log/</span><br></pre></td></tr></table></figure>
 
-<p>You can read official documentation of <a href="https://ci.apache.org/projects/flink/flink-docs-stable/dev/projectsetup/dependencies.html#appendix-template-for-building-a-jar-with-dependencies" target="_blank" rel="noopener">Configuring Dependencies, Connectors, Libraries</a> to understand more.</p>
+<ol start="4">
+<li><p>Start Single Kafka Instance</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/zookeeper-server-start.sh -daemon config/zookeeper.properties</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Start Kafka Service</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-server-start.sh  config/server.properties</span><br></pre></td></tr></table></figure>
+<p><img src="../../images/part-iii/chapter-10/kafka-started.png" alt="Kafka Server started"></p>
+</li>
+<li><p>Create a Single Partition Single Replication Topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>List Topics</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --list --zookeeper localhost:2181</span><br></pre></td></tr></table></figure>
+<p>You are expected to see:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Produce a Message to a Topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test</span><br></pre></td></tr></table></figure>
+<p>then type:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hello world</span><br><span class="line">hello kafka</span><br><span class="line">apache spark</span><br><span class="line">apache flink</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consume Messages from Beginning</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br><span class="line">&gt;hello world</span><br><span class="line">&gt;hello kafka</span><br><span class="line">&gt;apache spark</span><br><span class="line">&gt;apche flink</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p>Inspect a Topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic test</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 1	Replicas: 1	Isr: 1</span><br></pre></td></tr></table></figure>
+<p>// TODO: MAKE ENGLISH<br>第一行给出了所有分区的摘要，每个附加行给出了关于一个分区的信息。 由于我们只有一个分区，所以只有一行。</p>
+</li>
+</ol>
+<p>“Leader”: 是负责给定分区的所有读取和写入的节点。 每个节点将成为分区随机选择部分的领导者。</p>
+<p>“Replicas”: 是复制此分区日志的节点列表，无论它们是否是领导者，或者即使他们当前处于活动状态。</p>
+<p>“Isr”: 是一组“同步”副本。这是复制品列表的子集，当前活着并被引导到领导者。</p>
+<ol start="11">
+<li>Inspect messages Under a topic<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br></pre></td></tr></table></figure></li>
+</ol>
 
       
 
@@ -285,7 +324,7 @@ ga('send', 'pageview');
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Run-Flink-App-Jar/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Set-up-Local-Kafka-Development-Environment/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -299,15 +338,11 @@ ga('send', 'pageview');
   
 <nav id="article-nav">
   
-    <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Set up Local Kafka Development Environment
-        
-      </div>
-    </a>
   
+    <a href="/2019/10/29/Run-Flink-App-Jar/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Run Flink App Jar</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 

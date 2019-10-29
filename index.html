@@ -165,6 +165,127 @@ ga('send', 'pageview');
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Set-up-Local-Kafka-Development-Environment" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/">Set up Local Kafka Development Environment</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" class="archive-article-date">
+  	<time datetime="2019-10-29T19:25:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>In this tutorial, we will walk through one way to set up a local Kafka development environment, and demonstrate some common commands to use Kafka. We belive those commands are important for you later to develop and debug your Flink applications.</p>
+<ol>
+<li><p>Download the Binary</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Download</span><br><span class="line">curl -o kafka_2.11-2.3.0.tgz http://www.trieuvan.com/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Untar </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf kafka_2.11-2.3.0.tgz</span><br><span class="line">cd ~/kafka_2.11-2.3.0/</span><br></pre></td></tr></table></figure></li>
+<li><p>Configuration </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/config/server.properties</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">broker.id=1</span><br><span class="line">log.dir=~/kafka-log/</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p>Start Single Kafka Instance</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/zookeeper-server-start.sh -daemon config/zookeeper.properties</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Start Kafka Service</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-server-start.sh  config/server.properties</span><br></pre></td></tr></table></figure>
+<p><img src="../../images/part-iii/chapter-10/kafka-started.png" alt="Kafka Server started"></p>
+</li>
+<li><p>Create a Single Partition Single Replication Topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>List Topics</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --list --zookeeper localhost:2181</span><br></pre></td></tr></table></figure>
+<p>You are expected to see:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Produce a Message to a Topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test</span><br></pre></td></tr></table></figure>
+<p>then type:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hello world</span><br><span class="line">hello kafka</span><br><span class="line">apache spark</span><br><span class="line">apache flink</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Consume Messages from Beginning</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br><span class="line">&gt;hello world</span><br><span class="line">&gt;hello kafka</span><br><span class="line">&gt;apache spark</span><br><span class="line">&gt;apche flink</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p>Inspect a Topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic test</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 1	Replicas: 1	Isr: 1</span><br></pre></td></tr></table></figure>
+<p>// TODO: MAKE ENGLISH<br>第一行给出了所有分区的摘要，每个附加行给出了关于一个分区的信息。 由于我们只有一个分区，所以只有一行。</p>
+</li>
+</ol>
+<p>“Leader”: 是负责给定分区的所有读取和写入的节点。 每个节点将成为分区随机选择部分的领导者。</p>
+<p>“Replicas”: 是复制此分区日志的节点列表，无论它们是否是领导者，或者即使他们当前处于活动状态。</p>
+<p>“Isr”: 是一组“同步”副本。这是复制品列表的子集，当前活着并被引导到领导者。</p>
+<ol start="11">
+<li>Inspect messages Under a topic<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Run-Flink-App-Jar" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
