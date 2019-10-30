@@ -5,14 +5,14 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://flinkinpractice.com">
+  <link rel="dns-prefetch" href="//flinkinpractice.com">
   <title>Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Apache Flink® — Stateful Computations over Data Streams. This blog provides on hands-on exampls, tutorials and end-2-end examples about Apache Flink.">
 <meta name="keywords" content="Apache Flink">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Flink in Practice">
-<meta property="og:url" content="http:&#x2F;&#x2F;flinkinpractice.com&#x2F;index.html">
+<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
 <meta property="og:description" content="Apache Flink® — Stateful Computations over Data Streams. This blog provides on hands-on exampls, tutorials and end-2-end examples about Apache Flink.">
 <meta property="og:locale" content="en">
@@ -165,6 +165,364 @@ ga('send', 'pageview');
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-ElasticSearch-as-Sinker" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/29/ElasticSearch-as-Sinker/">ElasticSearch as Sinker</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/29/ElasticSearch-as-Sinker/" class="archive-article-date">
+  	<time datetime="2019-10-30T01:25:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Apache Flink is commonly used for log analysis. System or Application logs are sent to Kafka topics, computed by Apache Flink to generate new Kafka messages, consumed by other systems. ElasticSearch, Logstash and Kibana (ELK) Stack is a common system to analyze logs. The powerful search feature of ElasticSearch helps find the point of interest, the Kibana is useful for visualizing and project tracking. </p>
+<p>In this chapter, we will introduce Elastic Search as a sinker.</p>
+<p>Keep in mind, this guide needs to be followed by the <em><a href="/Set-up-Local-Kafka-Development-Environment/">Set up Local Kafka Development Environment</a></em></p>
+<h2 id="Set-up-ELK-stack"><a href="#Set-up-ELK-stack" class="headerlink" title="Set up ELK stack"></a>Set up ELK stack</h2><p>The easiest way to setup ELK stack is to use this <code>docker-elk</code> <a href="https://github.com/deviantony/docker-elk" target="_blank" rel="noopener">github repo</a>. Once you clone this repo to you local Mac computer. All you need to do is to run</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">docker-compose up</span></span><br></pre></td></tr></table></figure>
+<p>Your Kibana web application will be running on <code>localhost:5601</code>. Keep in mind that it might take a while for all applications ready. </p>
+<p>You can use </p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">docker-compose down</span></span><br></pre></td></tr></table></figure>
+<p>to take down the ELK stack, and remove all containers.</p>
+<h2 id="ElasticSearch-Sinker"><a href="#ElasticSearch-Sinker" class="headerlink" title="ElasticSearch Sinker"></a>ElasticSearch Sinker</h2><p>In this example, we will continue the MySQL as Sinker example illustrated earlier. Now we will write out Student data into Elastic Search instead this time. </p>
+<ol>
+<li>ElasticSearch Connector dependency<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-connector-elasticsearch6_$&#123;scala.binary.version&#125;<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flink.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="application-properties"><a href="#application-properties" class="headerlink" title="application.properties"></a>application.properties</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">kafka.brokers=localhost:<span class="number">9092</span></span><br><span class="line">kafka.<span class="keyword">group</span>.id=metrics-<span class="keyword">group</span>-test</span><br><span class="line">kafka.zookeeper.<span class="keyword">connect</span>=localhost:<span class="number">2181</span></span><br><span class="line">metrics.topic=alert-metrics</span><br><span class="line">stream.parallelism=<span class="number">5</span></span><br><span class="line">stream.<span class="keyword">checkpoint</span>.interval=<span class="number">1000</span></span><br><span class="line">stream.<span class="keyword">checkpoint</span>.<span class="keyword">enable</span>=<span class="keyword">false</span></span><br><span class="line">elasticsearch.hosts=localhost:<span class="number">9200</span>,localhost:<span class="number">9202</span>,localhost:<span class="number">9203</span></span><br><span class="line">elasticsearch.bulk.flush.max.actions=<span class="number">40</span></span><br><span class="line">stream.sink.parallelism=<span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Start-Kafka-with-Zookeeper"><a href="#Start-Kafka-with-Zookeeper" class="headerlink" title="Start Kafka with Zookeeper"></a>Start Kafka with Zookeeper</h2><p>We have covered how to start Kafka with Zookeeper in the previous chapter. You can start it now.</p>
+<h2 id="Student-Class-and-Write-to-Kafka-Utility-Class"><a href="#Student-Class-and-Write-to-Kafka-Utility-Class" class="headerlink" title="Student Class and Write to Kafka Utility Class"></a>Student Class and Write to Kafka Utility Class</h2><p>Similar in the previous chapter, we have <code>Student.java</code> class and <code>KafkaUtils.java</code>. The purpose of <code>KafkaUtils.java</code> is to publish messages to Kafka so our Flink application has something to consume.</p>
+<h2 id="Main-Class"><a href="#Main-Class" class="headerlink" title="Main Class"></a>Main Class</h2><p>We create a <code>Main.java</code> class to emulate the process. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.RuntimeContext;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.elasticsearch.ElasticsearchSinkFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.elasticsearch.RequestIndexer;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.HttpHost;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.auth.AuthScope;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.auth.UsernamePasswordCredentials;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.CredentialsProvider;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.client.BasicCredentialsProvider;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.nio.client.HttpAsyncClientBuilder;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.message.BasicHeader;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.client.Requests;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.client.RestClientBuilder;</span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String READ_TOPIC = <span class="string">"student-1"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line">        props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</span><br><span class="line">        props.put(<span class="string">"zookeeper.connect"</span>, <span class="string">"localhost:2181"</span>);</span><br><span class="line">        props.put(<span class="string">"group.id"</span>, <span class="string">"student-group-1"</span>);</span><br><span class="line">        props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.offset.reset"</span>, <span class="string">"latest"</span>);</span><br><span class="line"></span><br><span class="line">        DataStreamSource&lt;String&gt; student = env.addSource(<span class="keyword">new</span> FlinkKafkaConsumer&lt;&gt;(</span><br><span class="line">                READ_TOPIC,</span><br><span class="line">                <span class="keyword">new</span> SimpleStringSchema(),</span><br><span class="line">                props)).setParallelism(<span class="number">1</span>);</span><br><span class="line">        student.print();</span><br><span class="line">        log.info(<span class="string">"student:"</span> + student);</span><br><span class="line">        List&lt;HttpHost&gt; esHttphost = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        esHttphost.add(<span class="keyword">new</span> HttpHost(<span class="string">"127.0.0.1"</span>, <span class="number">9200</span>, <span class="string">"http"</span>));</span><br><span class="line"></span><br><span class="line">        ElasticsearchSink.Builder&lt;String&gt; esSinkBuilder = <span class="keyword">new</span> ElasticsearchSink.Builder&lt;&gt;(</span><br><span class="line">                esHttphost,</span><br><span class="line">                <span class="keyword">new</span> ElasticsearchSinkFunction&lt;String&gt;() &#123;</span><br><span class="line"></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> IndexRequest <span class="title">createIndexRequest</span><span class="params">(String element)</span> </span>&#123;</span><br><span class="line">                        Map&lt;String, String&gt; json = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">                        json.put(<span class="string">"data"</span>, element);</span><br><span class="line">                        log.info(<span class="string">"data:"</span> + element);</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">return</span> Requests.indexRequest()</span><br><span class="line">                                .index(<span class="string">"index-student"</span>)</span><br><span class="line">                                .type(<span class="string">"student"</span>)</span><br><span class="line">                                .source(json);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(String element, RuntimeContext ctx, RequestIndexer indexer)</span> </span>&#123;</span><br><span class="line">                        indexer.add(createIndexRequest(element));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        esSinkBuilder.setBulkFlushMaxActions(<span class="number">1</span>);</span><br><span class="line">        esSinkBuilder.setRestClientFactory(restClientBuilder -&gt; &#123;</span><br><span class="line">            restClientBuilder.setDefaultHeaders(<span class="keyword">new</span> BasicHeader[]&#123;<span class="keyword">new</span> BasicHeader(<span class="string">"Content-Type"</span>,<span class="string">"application/json"</span>)&#125;);</span><br><span class="line">            restClientBuilder.setHttpClientConfigCallback(<span class="keyword">new</span> RestClientBuilder.HttpClientConfigCallback() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> HttpAsyncClientBuilder <span class="title">customizeHttpClient</span><span class="params">(HttpAsyncClientBuilder httpClientBuilder)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// elastic search username and password</span></span><br><span class="line">                    CredentialsProvider credentialsProvider = <span class="keyword">new</span> BasicCredentialsProvider();</span><br><span class="line">                    credentialsProvider.setCredentials(AuthScope.ANY, <span class="keyword">new</span> UsernamePasswordCredentials(<span class="string">"elastic"</span>, <span class="string">"changeme"</span>));</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        esSinkBuilder.setFailureHandler(<span class="keyword">new</span> ElasticSearchSinkUtil.RetryRejectedExecutionFailureHandler());</span><br><span class="line"></span><br><span class="line">        student.addSink(esSinkBuilder.build());</span><br><span class="line">        env.execute(<span class="string">"Kafka as source, elastic search as sinker"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Validate-the-Results"><a href="#Validate-the-Results" class="headerlink" title="Validate the Results"></a>Validate the Results</h2><p>Head to <code>localhost:5601</code> to Kibana, log into the dashboard with <code>elastic</code> and <code>changeme</code> as username and password. The pair of credentials is the default. You might also notice we use those to authenticate with Elastic Search in the previous section. </p>
+<p>Click <code>Dev Tools</code> in the left sidebar, Type the following and run it (click the green button next to the query string)</p>
+<p><img src="ElasticSearch-as-sinker/es-as-sinker-validate.png" alt="elasticsearch as sinker validating"></p>
+<p>Now you see the <em>index-student</em> has been indexed by Elastic Search. You want to see the student’s records. We have another query available shown in the screen above. Now you run.</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /<span class="built_in">index</span>-student/_<span class="built_in">search</span>?pretty</span><br></pre></td></tr></table></figure>
+<p>You will see some results as follows:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">.....</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"took"</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"timed_out"</span> : <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">"_shards"</span> : &#123;</span><br><span class="line">    <span class="attr">"total"</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">"successful"</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">"skipped"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"failed"</span> : <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"hits"</span> : &#123;</span><br><span class="line">    <span class="attr">"total"</span> : &#123;</span><br><span class="line">      <span class="attr">"value"</span> : <span class="number">100</span>,</span><br><span class="line">      <span class="attr">"relation"</span> : <span class="string">"eq"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"max_score"</span> : <span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">"hits"</span> : [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">"_index"</span> : <span class="string">"index-student"</span>,</span><br><span class="line">        <span class="attr">"_type"</span> : <span class="string">"student"</span>,</span><br><span class="line">        <span class="attr">"_id"</span> : <span class="string">"nYLvvG0BlJ_Mznd3q8Ty"</span>,</span><br><span class="line">        <span class="attr">"_score"</span> : <span class="number">1.0</span>,</span><br><span class="line">        <span class="attr">"_source"</span> : &#123;</span><br><span class="line">          <span class="attr">"data"</span> : <span class="string">""</span><span class="string">"&#123;"</span>id<span class="string">":12,"</span>name<span class="string">":"</span>itzzy12<span class="string">","</span>password<span class="string">":"</span>password12<span class="string">","</span>age<span class="string">":30&#125;"</span><span class="string">""</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>It proves our Flink application has successfully consumed Kafka messages, and write to Elastic Search.</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/29/ElasticSearch-as-Sinker/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Windows-Explained-by-Examples" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/29/Windows-Explained-by-Examples/">Windows Explained by Examples</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/29/Windows-Explained-by-Examples/" class="archive-article-date">
+  	<time datetime="2019-10-30T01:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/29/Windows-Explained-by-Examples/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-ElasticSearch-as-Sinker-2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/29/ElasticSearch-as-Sinker-2/">ElasticSearch as Sinker</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/29/ElasticSearch-as-Sinker-2/" class="archive-article-date">
+  	<time datetime="2019-10-30T01:08:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Apache Flink is commonly used for log analysis. System or Application logs are sent to Kafka topics, computed by Apache Flink to generate new Kafka messages, consumed by other systems. ElasticSearch, Logstash and Kibana (ELK) Stack is a common system to analyze logs. The powerful search feature of ElasticSearch helps find the point of interest, the Kibana is useful for visualizing and project tracking. </p>
+<p>In this chapter, we will introduce Elastic Search as a sinker.</p>
+<p>Keep in mind, this guide needs to be followed by the <em><a href="/Set-up-Local-Kafka-Development-Environment/">Set up Local Kafka Development Environment</a></em></p>
+<h2 id="Set-up-ELK-stack"><a href="#Set-up-ELK-stack" class="headerlink" title="Set up ELK stack"></a>Set up ELK stack</h2><p>The easiest way to setup ELK stack is to use this <code>docker-elk</code> <a href="https://github.com/deviantony/docker-elk" target="_blank" rel="noopener">github repo</a>. Once you clone this repo to you local Mac computer. All you need to do is to run</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">docker-compose up</span></span><br></pre></td></tr></table></figure>
+<p>Your Kibana web application will be running on <code>localhost:5601</code>. Keep in mind that it might take a while for all applications ready. </p>
+<p>You can use </p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">docker-compose down</span></span><br></pre></td></tr></table></figure>
+<p>to take down the ELK stack, and remove all containers.</p>
+<h2 id="ElasticSearch-Sinker"><a href="#ElasticSearch-Sinker" class="headerlink" title="ElasticSearch Sinker"></a>ElasticSearch Sinker</h2><p>In this example, we will continue the MySQL as Sinker example illustrated earlier. Now we will write out Student data into Elastic Search instead this time. </p>
+<ol>
+<li>ElasticSearch Connector dependency<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-connector-elasticsearch6_$&#123;scala.binary.version&#125;<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flink.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="application-properties"><a href="#application-properties" class="headerlink" title="application.properties"></a>application.properties</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">kafka.brokers=localhost:<span class="number">9092</span></span><br><span class="line">kafka.<span class="keyword">group</span>.id=metrics-<span class="keyword">group</span>-test</span><br><span class="line">kafka.zookeeper.<span class="keyword">connect</span>=localhost:<span class="number">2181</span></span><br><span class="line">metrics.topic=alert-metrics</span><br><span class="line">stream.parallelism=<span class="number">5</span></span><br><span class="line">stream.<span class="keyword">checkpoint</span>.interval=<span class="number">1000</span></span><br><span class="line">stream.<span class="keyword">checkpoint</span>.<span class="keyword">enable</span>=<span class="keyword">false</span></span><br><span class="line">elasticsearch.hosts=localhost:<span class="number">9200</span>,localhost:<span class="number">9202</span>,localhost:<span class="number">9203</span></span><br><span class="line">elasticsearch.bulk.flush.max.actions=<span class="number">40</span></span><br><span class="line">stream.sink.parallelism=<span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Start-Kafka-with-Zookeeper"><a href="#Start-Kafka-with-Zookeeper" class="headerlink" title="Start Kafka with Zookeeper"></a>Start Kafka with Zookeeper</h2><p>We have covered how to start Kafka with Zookeeper in the previous chapter. You can start it now.</p>
+<h2 id="Student-Class-and-Write-to-Kafka-Utility-Class"><a href="#Student-Class-and-Write-to-Kafka-Utility-Class" class="headerlink" title="Student Class and Write to Kafka Utility Class"></a>Student Class and Write to Kafka Utility Class</h2><p>Similar in the previous chapter, we have <code>Student.java</code> class and <code>KafkaUtils.java</code>. The purpose of <code>KafkaUtils.java</code> is to publish messages to Kafka so our Flink application has something to consume.</p>
+<h2 id="Main-Class"><a href="#Main-Class" class="headerlink" title="Main Class"></a>Main Class</h2><p>We create a <code>Main.java</code> class to emulate the process. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.RuntimeContext;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.elasticsearch.ElasticsearchSinkFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.elasticsearch.RequestIndexer;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.HttpHost;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.auth.AuthScope;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.auth.UsernamePasswordCredentials;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.CredentialsProvider;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.client.BasicCredentialsProvider;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.nio.client.HttpAsyncClientBuilder;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.message.BasicHeader;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.client.Requests;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.client.RestClientBuilder;</span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String READ_TOPIC = <span class="string">"student-1"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line">        props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</span><br><span class="line">        props.put(<span class="string">"zookeeper.connect"</span>, <span class="string">"localhost:2181"</span>);</span><br><span class="line">        props.put(<span class="string">"group.id"</span>, <span class="string">"student-group-1"</span>);</span><br><span class="line">        props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.offset.reset"</span>, <span class="string">"latest"</span>);</span><br><span class="line"></span><br><span class="line">        DataStreamSource&lt;String&gt; student = env.addSource(<span class="keyword">new</span> FlinkKafkaConsumer&lt;&gt;(</span><br><span class="line">                READ_TOPIC,</span><br><span class="line">                <span class="keyword">new</span> SimpleStringSchema(),</span><br><span class="line">                props)).setParallelism(<span class="number">1</span>);</span><br><span class="line">        student.print();</span><br><span class="line">        log.info(<span class="string">"student:"</span> + student);</span><br><span class="line">        List&lt;HttpHost&gt; esHttphost = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        esHttphost.add(<span class="keyword">new</span> HttpHost(<span class="string">"127.0.0.1"</span>, <span class="number">9200</span>, <span class="string">"http"</span>));</span><br><span class="line"></span><br><span class="line">        ElasticsearchSink.Builder&lt;String&gt; esSinkBuilder = <span class="keyword">new</span> ElasticsearchSink.Builder&lt;&gt;(</span><br><span class="line">                esHttphost,</span><br><span class="line">                <span class="keyword">new</span> ElasticsearchSinkFunction&lt;String&gt;() &#123;</span><br><span class="line"></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> IndexRequest <span class="title">createIndexRequest</span><span class="params">(String element)</span> </span>&#123;</span><br><span class="line">                        Map&lt;String, String&gt; json = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">                        json.put(<span class="string">"data"</span>, element);</span><br><span class="line">                        log.info(<span class="string">"data:"</span> + element);</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">return</span> Requests.indexRequest()</span><br><span class="line">                                .index(<span class="string">"index-student"</span>)</span><br><span class="line">                                .type(<span class="string">"student"</span>)</span><br><span class="line">                                .source(json);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(String element, RuntimeContext ctx, RequestIndexer indexer)</span> </span>&#123;</span><br><span class="line">                        indexer.add(createIndexRequest(element));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        esSinkBuilder.setBulkFlushMaxActions(<span class="number">1</span>);</span><br><span class="line">        esSinkBuilder.setRestClientFactory(restClientBuilder -&gt; &#123;</span><br><span class="line">            restClientBuilder.setDefaultHeaders(<span class="keyword">new</span> BasicHeader[]&#123;<span class="keyword">new</span> BasicHeader(<span class="string">"Content-Type"</span>,<span class="string">"application/json"</span>)&#125;);</span><br><span class="line">            restClientBuilder.setHttpClientConfigCallback(<span class="keyword">new</span> RestClientBuilder.HttpClientConfigCallback() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> HttpAsyncClientBuilder <span class="title">customizeHttpClient</span><span class="params">(HttpAsyncClientBuilder httpClientBuilder)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// elastic search username and password</span></span><br><span class="line">                    CredentialsProvider credentialsProvider = <span class="keyword">new</span> BasicCredentialsProvider();</span><br><span class="line">                    credentialsProvider.setCredentials(AuthScope.ANY, <span class="keyword">new</span> UsernamePasswordCredentials(<span class="string">"elastic"</span>, <span class="string">"changeme"</span>));</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        esSinkBuilder.setFailureHandler(<span class="keyword">new</span> ElasticSearchSinkUtil.RetryRejectedExecutionFailureHandler());</span><br><span class="line"></span><br><span class="line">        student.addSink(esSinkBuilder.build());</span><br><span class="line">        env.execute(<span class="string">"Kafka as source, elastic search as sinker"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Validate-the-Results"><a href="#Validate-the-Results" class="headerlink" title="Validate the Results"></a>Validate the Results</h2><p>Head to <code>localhost:5601</code> to Kibana, log into the dashboard with <code>elastic</code> and <code>changeme</code> as username and password. The pair of credentials is the default. You might also notice we use those to authenticate with Elastic Search in the previous section. </p>
+<p>Click <code>Dev Tools</code> in the left sidebar, Type the following and run it (click the green button next to the query string)</p>
+<p><img src="../images/part-iii/chapter-10/es-as-sinker-validate.png" alt="elasticsearch as sinker validating"></p>
+<p>Now you see the <em>index-student</em> has been indexed by Elastic Search. You want to see the student’s records. We have another query available shown in the screen above. Now you run.</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /<span class="built_in">index</span>-student/_<span class="built_in">search</span>?pretty</span><br></pre></td></tr></table></figure>
+<p>You will see some results as follows:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">.....</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"took"</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"timed_out"</span> : <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">"_shards"</span> : &#123;</span><br><span class="line">    <span class="attr">"total"</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">"successful"</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">"skipped"</span> : <span class="number">0</span>,</span><br><span class="line">    <span class="attr">"failed"</span> : <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"hits"</span> : &#123;</span><br><span class="line">    <span class="attr">"total"</span> : &#123;</span><br><span class="line">      <span class="attr">"value"</span> : <span class="number">100</span>,</span><br><span class="line">      <span class="attr">"relation"</span> : <span class="string">"eq"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"max_score"</span> : <span class="number">1.0</span>,</span><br><span class="line">    <span class="attr">"hits"</span> : [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">"_index"</span> : <span class="string">"index-student"</span>,</span><br><span class="line">        <span class="attr">"_type"</span> : <span class="string">"student"</span>,</span><br><span class="line">        <span class="attr">"_id"</span> : <span class="string">"nYLvvG0BlJ_Mznd3q8Ty"</span>,</span><br><span class="line">        <span class="attr">"_score"</span> : <span class="number">1.0</span>,</span><br><span class="line">        <span class="attr">"_source"</span> : &#123;</span><br><span class="line">          <span class="attr">"data"</span> : <span class="string">""</span><span class="string">"&#123;"</span>id<span class="string">":12,"</span>name<span class="string">":"</span>itzzy12<span class="string">","</span>password<span class="string">":"</span>password12<span class="string">","</span>age<span class="string">":30&#125;"</span><span class="string">""</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>It proves our Flink application has successfully consumed Kafka messages, and write to Elastic Search.</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/29/ElasticSearch-as-Sinker-2/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Book-Review-Stream-Processing-with-Apache-Flink" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/">Book Review: Stream Processing with Apache Flink</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/" class="archive-article-date">
+  	<time datetime="2019-10-29T21:35:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="https://miro.medium.com/max/1000/1*wp57DdCLpsQGAinYm5PfXQ.jpeg" alt="Book Cover: Stream Processing with Apache Flink"></p>
+<p>An excellent book about Fink fundamentals. Can be a good reference book.</p>
+<h2 id="Chapter-1"><a href="#Chapter-1" class="headerlink" title="Chapter 1:"></a>Chapter 1:</h2><p>What’s stateful stream processing<br>Why stateful — 1. for event driven application, 2 data pipeline application, 3 data analytics application<br>how stateful — checkpoint and exact-once</p>
+<h2 id="Chapter-2-Stream-Processing-Fundamentals"><a href="#Chapter-2-Stream-Processing-Fundamentals" class="headerlink" title="Chapter 2: Stream Processing Fundamentals"></a>Chapter 2: Stream Processing Fundamentals</h2><p>Dataflow programming — dataflow graph &amp; daa parallelism &amp; task parallelism<br>Data exchange strategies — forward strategy, broadcast strategy, key-based strategy and random strategy<br>Processing streams in Parallel : Latency, throughput,<br>Operations on Data stream: stateless or stateful<br>Data ingestion and data egress — data ingestion from data sources (for example, kafaka topic), data egress to data sinks, for example, files, databases, message queues, etc<br>Transformation operations —<br>Rolling aggregation operation<br>Window operation — finite set of events called buckets; tumbling windows (count based, time based, session window such as user analytics),<br>Time semantics — processing time, event time and watermarks — a global progress metric that indicates the point in time when we are confident that no more delayed events will arrive<br>State and consistency models — state management, state partitioning, state recovery<br>Task Failures —<br>Result Guarantees — at-most-once, at-least-once, exactly-once, end-to-end exactly-once</p>
+<h2 id="Chapter-3-Architecture"><a href="#Chapter-3-Architecture" class="headerlink" title="Chapter 3: Architecture"></a>Chapter 3: Architecture</h2><p>System Architecture — leader election of highly available : Zookeeper; Apache Mesos, YARN, Kubernetes; HDFS, S3; RocksDB<br>Components of A Flink — a JobManager, a ResourceManager, a TaskManager, and a Dispatcher<br>JobManager — JobGraph, a logical dataflow graph (Execution Graph), and a JAR file.<br>TaskManagers — workers progresses of Flink<br>Dispatcher — runs across job execution<br>Deployment — Framework style (submitted your job as a Jar) and Library Style (bundle Flink and your job as a docker image)<br>Task Execution — Operators, tasks and processing slots<br>High Available Setup — zookeeper<br>TaskManager failures — JobManger ass ResourcesManager to provide more<br>JobManager failures — recover from ZooKeeper<br>Data Transfer in Flink — credit based flow control, task chaining,<br>Event-time processing — timestamp<br>Watermark propagation and event time —<br>Timestamp Assignment and watermark generation-<br>State management — operator state — list state, union list state, and broadcast state<br>Keyed state — value state, list state, and map state<br>state backends — local statement management and checkpointing state to a remote location<br>Scaling stateful operators -<br>Checkpoints, savepoints and state recovery — consistent checkpoints, recovery from a consistent checkpoint<br>Flink’s checkpointing algorithm — checkpoint barrier — carriers a checkpoint Id to identify the checkpoint it belongs to and logically splits a stream into two parts.<br>Performance Implications of Checkpointing —<br>Savepoints —<br>Using Savepoints — starting an application from a savepoint</p>
+<h2 id="Chapter-4-Setting-up-a-Development-Environment-for-Apache-Flink"><a href="#Chapter-4-Setting-up-a-Development-Environment-for-Apache-Flink" class="headerlink" title="Chapter 4 Setting up a Development Environment for Apache Flink"></a>Chapter 4 Setting up a Development Environment for Apache Flink</h2><h2 id="Chapter-5-The-DataStream-API"><a href="#Chapter-5-The-DataStream-API" class="headerlink" title="Chapter 5 The DataStream API"></a>Chapter 5 The DataStream API</h2><p>Typical stream application: 1. set up the execution environment, 2. read one or more streams from data sources 3. Apply stream transformation to implement the application logic 4. Optionally output the result to one or more data sinks 5. execute the program<br>Transformations — Basic transformation (map, filter, flatmap), keyedstream, multistream transformation (merge multiple stream into one stream or split one stream into multiple streams, keyBy, Rolling Aggregations — sum(), min(), max(),minBy(),maxBy(), reduce; Multistream Transformation — Union, Connect, CoMap, and CoFlatMap, Split and select), distribution transformation reorganize stream events (Random, Round-Robin, Rescale, Broadcast, Global, Custom)<br>Setting Parallelism —<br>Types — data types (primitive, java &amp; scala tuples, POJOs, special), Kryo serialization<br>Defining Keys and Referencing Fields (Field positions, field expressions, key selectors)<br>Implementing functions — function classes, function must be Java serializable, lambada functions, Rich functions<br>Including external and flink dependencies — 1. bundle all dependencies into an application JAR (flatted JAR, preferred way) 2. the Jar file of a dependency can be added to the ./lib folder.</p>
+<h2 id="Chapter-6-—-Time-based-and-window-operators"><a href="#Chapter-6-—-Time-based-and-window-operators" class="headerlink" title="Chapter 6 — Time based and window operators"></a>Chapter 6 — Time based and window operators</h2><p>Configuring time characteristics — processingTime, EventTime, IngestionTime<br>Assigning Timestamps and Generating Watermarks —<br>Watermarks, Latency and completeness —<br>Process Functions —<br>TimerServices and Timers —<br>Window Operators —<br>Defining Window Operators —<br>Built-in Window Assigners — tumbling windows, sliding windows, session windows<br>Applying Functions to Windows<br>Reduce Function —<br>ProcessWindow Function —<br>Incremental Aggregation and ProcessWindow function —<br>Customizing Window Operators —<br>Window Lifecycle — window content, window object, custom-defined state in a trigger<br>Window Assigners —<br>Triggers — continue, fire, purge, fire_and_purge<br>Evictors —<br>Joining Streams on Time — Interval Join, window join<br>Handling Late Data — Dropping Late Events, Redirecting Late Events, Updating Results by including Late Events</p>
+<h2 id="Chapter-7-Stateful-Operators-and-Applications"><a href="#Chapter-7-Stateful-Operators-and-Applications" class="headerlink" title="Chapter 7. Stateful Operators and Applications"></a>Chapter 7. Stateful Operators and Applications</h2><p>Implementing Stateful Functions —<br>— Declaring Keyed State at RuntimeContext , ValueState, ListState, MapState, ReducingState, AggregatingState,<br>Implementing Operator List State with the ListCheckpointed Interface, SnapshotState(), restoreState(),<br>Using Connected Broadcast State —<br>Using the CheckpointedFunction interface<br>Receiving Notification About Completed Checkpoints<br>Enabling Failure Recovery for Stateful Applications<br>Ensuring the Maintainability of Stateful Applications — operators unique identifiers and maxium parallelism are baked into savepoints<br>Specifiying Unique Operator Identifiers —<br>Choosing a State Backend — MemoryStateBackend, FsStateBackend, RocksDBStateBackend<br>Choosing a State Primitive — ValueState, ListState, and MapState,<br>Preventing Leaking State —<br>you should take application requirements and the properties of its input data, such as key domain, into account when designing and implement- ing stateful operators.<br>Evolving Stateful Applications —</p>
+<ol>
+<li>Updating an application without modifying existing state</li>
+<li>Removing a state from the application</li>
+<li>modifying the state of an existing operator by changing the state primitive or data type of the state<br>Queryable State —<br>need to share their results with other applications. A common pattern is to write results into a database or key-value store and have other applications retrieve the result from that datastore. Such an architecture implies that a separate system needs to be set up and maintained, which can be a major effort, especially if this needs to be a distributed system as well.<br>Architecture and Enabling Queryable State: 3 processes. 1. the QueryablestateClient is used by an external app to submit queries and retrieve results</li>
+<li>queryableStateClientProxy accepts and serves client requests.</li>
+<li>queryableStateServer serves the requests of a client proxy.<br>Exposing queryable state<br>Querying State from external applications</li>
+</ol>
+<h2 id="Chapter-8-Reading-from-and-Writing-to-External-Systems"><a href="#Chapter-8-Reading-from-and-Writing-to-External-Systems" class="headerlink" title="Chapter 8. Reading from and Writing to External Systems"></a>Chapter 8. Reading from and Writing to External Systems</h2><p>However, just being able to read or write data to external datastores is not sufficient for a stream processor that wants to provide meaningful consistency guarantees in the case of failure.<br>Applications Consistency Guarantees — Instead, the source and sink connectors of an application need to be integrated with Flink’s checkpointing and recovery mechanism and provide certain properties to be able to give meaningful guarantees.If an application ingests data from a source connector that is not able to store and reset a reading position, it might suffer from data loss in the case of a failure and only provide at-most-once guarantees.<br>Idempotent Writes-<br>Transactional Writes-write-ahead-log(WAL)sink (At least once)and two-phase-commit(2pc) sink(exactly once)<br>Provided Connectors — provides connetors for Kafka, Kinesis, RabbitMQ….<br>Apache Kafka Source Connector (Sinker) connector, at-least-once guarantees for the kafka sink, exactly-once guarantees for kafka sink, custom partitioning and writing message timestamps, filesystem source connector, Filesystem sink connector,<br>Apache Cassandra Sink Connector<br>Implementing a custom source function,<br>Resettable source functions<br>source functions, timestamps, and watermarks<br>implementing a custom sink function<br>Idempotent Sink Connectors<br>Transactional Sink Connectors<br>GenericWriteAheadSink<br>TwoPhaseCommitSinkFunction<br>Asynchronously Accessing External Systems</p>
+<h2 id="Chapter-9-Setting-Up-Flink-for-Streaming-Applications"><a href="#Chapter-9-Setting-Up-Flink-for-Streaming-Applications" class="headerlink" title="Chapter 9. Setting Up Flink for Streaming Applications"></a>Chapter 9. Setting Up Flink for Streaming Applications</h2><p>Deployment Modes: Standalone Cluster, Docker, Apache Hadoop YARN, Kubernetes<br>Highly Available Setups — zooKeeper setup<br>HA standalone Setup<br>HA Yarn Setup<br>HA K8S setup<br>Integration with Hadoop Components<br>Filesystem Configuration: Local Filesystem, Hadoop HDFS, Amazon S3 and OpenStack Swift FS<br>System Configuration — Java and classloading, CPU, memory and network buffers, Disk Storage, Checkpointing and State Backends, Security — Kerberos authentication,<br>Chapter 10. Operating Flink and Streaming Applications<br>Running and Managing Streaming Applications — most of these features are based on SavePoints.<br>Managing Applications with the command-line client<br>Starting an application<br>Listing running applications<br>taking and disposing of a savepoint<br>Cancelling an application<br>Starting an application from a savepoint<br>scaling an application in and out<br>managing applications with REST API<br>Managing and monitoring a flink Cluster<br>Managing and monitoring a flink applications<br>Bundling and deploying application in containers —<br>Building a job-specific flink docker image<br>running a job-specific docker image on kubernetes<br>Controlling task scheduling, controlling task chaining, defining slot-sharing groups, tuning checkpointing and recovery (configuring checkpointing, enabling checkpoint compression, retaining checkpoints after an application stopped, configuring state backends, configuring recovery, restart strategies, local recovery<br>Monitoring Flink Cluster and applications — flink web UI, Metric System, Registring and Using Metircs, Metric Groups, monitoring latency,<br>Configuring the logging behavior-<br>Chapter 11: where to go from here<br>domain-specific libraries, and API for relational queries, complex event processing (CEP) and graph processing<br>The DataSet API for batching Processing<br>Table API and SQL for Relational Analysis<br>FlinkCEP for Complex Event Processing and Pattern Matching<br>Gelly for Graph Processing</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Set-up-Local-Kafka-Development-Environment" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -191,42 +549,42 @@ ga('send', 'pageview');
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Download</span><br><span class="line">curl -o kafka_2.11-2.3.0.tgz http://www.trieuvan.com/apache/kafka/2.3.0/kafka_2.11-2.3.0.tgz</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Untar </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf kafka_2.11-2.3.0.tgz</span><br><span class="line">cd ~/kafka_2.11-2.3.0/</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf kafka_2<span class="number">.11</span><span class="number">-2.3</span><span class="number">.0</span>.tgz</span><br><span class="line">cd ~/kafka_2<span class="number">.11</span><span class="number">-2.3</span><span class="number">.0</span>/</span><br></pre></td></tr></table></figure></li>
 <li><p>Configuration </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/config/server.properties</span><br></pre></td></tr></table></figure>
 
 </li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">broker.id=1</span><br><span class="line">log.dir=~/kafka-log/</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">broker.id</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">log.dir</span>=~/kafka-log/</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
 <li><p>Start Single Kafka Instance</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/zookeeper-server-start.sh -daemon config/zookeeper.properties</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/zookeeper-<span class="keyword">server</span>-<span class="keyword">start</span>.sh -daemon config/zookeeper.properties</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Start Kafka Service</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-server-start.sh  config/server.properties</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-<span class="keyword">server</span>-<span class="keyword">start</span>.sh  config/<span class="keyword">server</span>.properties</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Create a Single Partition Single Replication Topic</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br></pre></td></tr></table></figure>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">bin/kafka</span><span class="literal">-</span><span class="comment">topics</span><span class="string">.</span><span class="comment">sh</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">create</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">zookeeper</span> <span class="comment">localhost:2181</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">replication</span><span class="literal">-</span><span class="comment">factor</span> <span class="comment">1</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">partitions</span> <span class="comment">1</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">topic</span> <span class="comment">test</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>List Topics</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --list --zookeeper localhost:2181</span><br></pre></td></tr></table></figure>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.<span class="keyword">sh</span> --<span class="keyword">list</span> --zookeeper localhos<span class="variable">t:2181</span></span><br></pre></td></tr></table></figure>
 <p>You are expected to see:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">test</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">test</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Produce a Message to a Topic</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test</span><br></pre></td></tr></table></figure>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-producer.<span class="keyword">sh</span> --broker-<span class="keyword">list</span> localhost:9092 --topic <span class="keyword">test</span></span><br></pre></td></tr></table></figure>
 <p>then type:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hello world</span><br><span class="line">hello kafka</span><br><span class="line">apache spark</span><br><span class="line">apache flink</span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hello</span> <span class="string">world</span></span><br><span class="line"><span class="attr">hello</span> <span class="string">kafka</span></span><br><span class="line"><span class="attr">apache</span> <span class="string">spark</span></span><br><span class="line"><span class="attr">apache</span> <span class="string">flink</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Consume Messages from Beginning</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br><span class="line">&gt;hello world</span><br><span class="line">&gt;hello kafka</span><br><span class="line">&gt;apache spark</span><br><span class="line">&gt;apche flink</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">hello world</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">hello kafka</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">apache spark</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">apche flink</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Inspect a Topic</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic test</span><br><span class="line">Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:</span><br><span class="line">	Topic: test	Partition: 0	Leader: 1	Replicas: 1	Isr: 1</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">bin/kafka-topics.sh</span> <span class="bullet">--describe</span> <span class="bullet">--zookeeper</span> <span class="attr">localhost:2181</span> <span class="bullet">--topic</span> <span class="string">test</span></span><br><span class="line"><span class="attr">Topic:</span><span class="string">test</span>	<span class="attr">PartitionCount:1</span>	<span class="attr">ReplicationFactor:1</span>	<span class="attr">Configs:</span></span><br><span class="line">	<span class="attr">Topic:</span> <span class="string">test</span>	<span class="attr">Partition:</span> <span class="number">0</span>	<span class="attr">Leader:</span> <span class="number">1</span>	<span class="attr">Replicas:</span> <span class="number">1</span>	<span class="attr">Isr:</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Inspect messages Under a topic</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">bin/kafka</span><span class="literal">-</span><span class="comment">console</span><span class="literal">-</span><span class="comment">consumer</span><span class="string">.</span><span class="comment">sh</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">bootstrap</span><span class="literal">-</span><span class="comment">server</span> <span class="comment">localhost:9092</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">topic</span> <span class="comment">test</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">from</span><span class="literal">-</span><span class="comment">beginning</span></span><br></pre></td></tr></table></figure></li>
 </ol>
 
       

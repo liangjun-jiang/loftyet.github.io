@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//flinkinpractice.com">
-  <title>Run Flink App Jar | Flink in Practice</title>
+  <title>Book Review: Stream Processing with Apache Flink | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+  <meta name="description" content="An excellent book about Fink fundamentals. Can be a good reference book. Chapter 1:What’s stateful stream processingWhy stateful — 1. for event driven application, 2 data pipeline application, 3 data">
 <meta name="keywords" content="Flink">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Run Flink App Jar">
-<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Run-Flink-App-Jar&#x2F;index.html">
+<meta property="og:title" content="Book Review: Stream Processing with Apache Flink">
+<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Book-Review-Stream-Processing-with-Apache-Flink&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+<meta property="og:description" content="An excellent book about Fink fundamentals. Can be a good reference book. Chapter 1:What’s stateful stream processingWhy stateful — 1. for event driven application, 2 data pipeline application, 3 data">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-10-29T12:52:50.229Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;miro.medium.com&#x2F;max&#x2F;1000&#x2F;1*wp57DdCLpsQGAinYm5PfXQ.jpeg">
+<meta property="og:updated_time" content="2019-10-29T21:41:09.213Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;miro.medium.com&#x2F;max&#x2F;1000&#x2F;1*wp57DdCLpsQGAinYm5PfXQ.jpeg">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
   
@@ -164,37 +166,43 @@ ga('send', 'pageview');
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Run-Flink-App-Jar" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Book-Review-Stream-Processing-with-Apache-Flink" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Run Flink App Jar
+      Book Review: Stream Processing with Apache Flink
     </h1>
   
 
         
-        <a href="/2019/10/29/Run-Flink-App-Jar/" class="archive-article-date">
-  	<time datetime="2019-10-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+        <a href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/" class="archive-article-date">
+  	<time datetime="2019-10-29T21:35:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Run-a-Flink-App-Jar"><a href="#Run-a-Flink-App-Jar" class="headerlink" title="Run a Flink App Jar"></a>Run a Flink App Jar</h1><p>For Flink application, there is one way to run a built jar file, also this is the way Flink recommended</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flink.streamwordcount ./target/your-target-jar-file.jar</span><br></pre></td></tr></table></figure>
-
-<p><code>com.flink.streamwordcount</code> is the main class of your Flink application.<br>Since we are used to run jar file with Java in this fashion. Just for fun, how could we still use this approach? </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar YOUR-TARGET-JAR-FILE.jar</span><br></pre></td></tr></table></figure>
-<p>To do so, we have modified your <code>pom.xml</code> a little bit, assumed you are using Flink template to generate Intelli J project<br>First of all, you might have to take <code>org.slf4j.*</code> and <code>log4j</code> from the exclude list</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">artifactSet</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">excludes</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>org.apache.flink:force-shading<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>com.google.code.findbugs:jsr305<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;org.slf4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;log4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">excludes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">artifactSet</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Second, you need to add the following line in the <code>&lt;transformers&gt;</code> section.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transformer</span> <span class="attr">implementation</span>=<span class="string">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">resource</span>&gt;</span>reference.conf<span class="tag">&lt;/<span class="name">resource</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transformer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>You can read official documentation of <a href="https://ci.apache.org/projects/flink/flink-docs-stable/dev/projectsetup/dependencies.html#appendix-template-for-building-a-jar-with-dependencies" target="_blank" rel="noopener">Configuring Dependencies, Connectors, Libraries</a> to understand more.</p>
+        <p><img src="https://miro.medium.com/max/1000/1*wp57DdCLpsQGAinYm5PfXQ.jpeg" alt="Book Cover: Stream Processing with Apache Flink"></p>
+<p>An excellent book about Fink fundamentals. Can be a good reference book.</p>
+<h2 id="Chapter-1"><a href="#Chapter-1" class="headerlink" title="Chapter 1:"></a>Chapter 1:</h2><p>What’s stateful stream processing<br>Why stateful — 1. for event driven application, 2 data pipeline application, 3 data analytics application<br>how stateful — checkpoint and exact-once</p>
+<h2 id="Chapter-2-Stream-Processing-Fundamentals"><a href="#Chapter-2-Stream-Processing-Fundamentals" class="headerlink" title="Chapter 2: Stream Processing Fundamentals"></a>Chapter 2: Stream Processing Fundamentals</h2><p>Dataflow programming — dataflow graph &amp; daa parallelism &amp; task parallelism<br>Data exchange strategies — forward strategy, broadcast strategy, key-based strategy and random strategy<br>Processing streams in Parallel : Latency, throughput,<br>Operations on Data stream: stateless or stateful<br>Data ingestion and data egress — data ingestion from data sources (for example, kafaka topic), data egress to data sinks, for example, files, databases, message queues, etc<br>Transformation operations —<br>Rolling aggregation operation<br>Window operation — finite set of events called buckets; tumbling windows (count based, time based, session window such as user analytics),<br>Time semantics — processing time, event time and watermarks — a global progress metric that indicates the point in time when we are confident that no more delayed events will arrive<br>State and consistency models — state management, state partitioning, state recovery<br>Task Failures —<br>Result Guarantees — at-most-once, at-least-once, exactly-once, end-to-end exactly-once</p>
+<h2 id="Chapter-3-Architecture"><a href="#Chapter-3-Architecture" class="headerlink" title="Chapter 3: Architecture"></a>Chapter 3: Architecture</h2><p>System Architecture — leader election of highly available : Zookeeper; Apache Mesos, YARN, Kubernetes; HDFS, S3; RocksDB<br>Components of A Flink — a JobManager, a ResourceManager, a TaskManager, and a Dispatcher<br>JobManager — JobGraph, a logical dataflow graph (Execution Graph), and a JAR file.<br>TaskManagers — workers progresses of Flink<br>Dispatcher — runs across job execution<br>Deployment — Framework style (submitted your job as a Jar) and Library Style (bundle Flink and your job as a docker image)<br>Task Execution — Operators, tasks and processing slots<br>High Available Setup — zookeeper<br>TaskManager failures — JobManger ass ResourcesManager to provide more<br>JobManager failures — recover from ZooKeeper<br>Data Transfer in Flink — credit based flow control, task chaining,<br>Event-time processing — timestamp<br>Watermark propagation and event time —<br>Timestamp Assignment and watermark generation-<br>State management — operator state — list state, union list state, and broadcast state<br>Keyed state — value state, list state, and map state<br>state backends — local statement management and checkpointing state to a remote location<br>Scaling stateful operators -<br>Checkpoints, savepoints and state recovery — consistent checkpoints, recovery from a consistent checkpoint<br>Flink’s checkpointing algorithm — checkpoint barrier — carriers a checkpoint Id to identify the checkpoint it belongs to and logically splits a stream into two parts.<br>Performance Implications of Checkpointing —<br>Savepoints —<br>Using Savepoints — starting an application from a savepoint</p>
+<h2 id="Chapter-4-Setting-up-a-Development-Environment-for-Apache-Flink"><a href="#Chapter-4-Setting-up-a-Development-Environment-for-Apache-Flink" class="headerlink" title="Chapter 4 Setting up a Development Environment for Apache Flink"></a>Chapter 4 Setting up a Development Environment for Apache Flink</h2><h2 id="Chapter-5-The-DataStream-API"><a href="#Chapter-5-The-DataStream-API" class="headerlink" title="Chapter 5 The DataStream API"></a>Chapter 5 The DataStream API</h2><p>Typical stream application: 1. set up the execution environment, 2. read one or more streams from data sources 3. Apply stream transformation to implement the application logic 4. Optionally output the result to one or more data sinks 5. execute the program<br>Transformations — Basic transformation (map, filter, flatmap), keyedstream, multistream transformation (merge multiple stream into one stream or split one stream into multiple streams, keyBy, Rolling Aggregations — sum(), min(), max(),minBy(),maxBy(), reduce; Multistream Transformation — Union, Connect, CoMap, and CoFlatMap, Split and select), distribution transformation reorganize stream events (Random, Round-Robin, Rescale, Broadcast, Global, Custom)<br>Setting Parallelism —<br>Types — data types (primitive, java &amp; scala tuples, POJOs, special), Kryo serialization<br>Defining Keys and Referencing Fields (Field positions, field expressions, key selectors)<br>Implementing functions — function classes, function must be Java serializable, lambada functions, Rich functions<br>Including external and flink dependencies — 1. bundle all dependencies into an application JAR (flatted JAR, preferred way) 2. the Jar file of a dependency can be added to the ./lib folder.</p>
+<h2 id="Chapter-6-—-Time-based-and-window-operators"><a href="#Chapter-6-—-Time-based-and-window-operators" class="headerlink" title="Chapter 6 — Time based and window operators"></a>Chapter 6 — Time based and window operators</h2><p>Configuring time characteristics — processingTime, EventTime, IngestionTime<br>Assigning Timestamps and Generating Watermarks —<br>Watermarks, Latency and completeness —<br>Process Functions —<br>TimerServices and Timers —<br>Window Operators —<br>Defining Window Operators —<br>Built-in Window Assigners — tumbling windows, sliding windows, session windows<br>Applying Functions to Windows<br>Reduce Function —<br>ProcessWindow Function —<br>Incremental Aggregation and ProcessWindow function —<br>Customizing Window Operators —<br>Window Lifecycle — window content, window object, custom-defined state in a trigger<br>Window Assigners —<br>Triggers — continue, fire, purge, fire_and_purge<br>Evictors —<br>Joining Streams on Time — Interval Join, window join<br>Handling Late Data — Dropping Late Events, Redirecting Late Events, Updating Results by including Late Events</p>
+<h2 id="Chapter-7-Stateful-Operators-and-Applications"><a href="#Chapter-7-Stateful-Operators-and-Applications" class="headerlink" title="Chapter 7. Stateful Operators and Applications"></a>Chapter 7. Stateful Operators and Applications</h2><p>Implementing Stateful Functions —<br>— Declaring Keyed State at RuntimeContext , ValueState, ListState, MapState, ReducingState, AggregatingState,<br>Implementing Operator List State with the ListCheckpointed Interface, SnapshotState(), restoreState(),<br>Using Connected Broadcast State —<br>Using the CheckpointedFunction interface<br>Receiving Notification About Completed Checkpoints<br>Enabling Failure Recovery for Stateful Applications<br>Ensuring the Maintainability of Stateful Applications — operators unique identifiers and maxium parallelism are baked into savepoints<br>Specifiying Unique Operator Identifiers —<br>Choosing a State Backend — MemoryStateBackend, FsStateBackend, RocksDBStateBackend<br>Choosing a State Primitive — ValueState, ListState, and MapState,<br>Preventing Leaking State —<br>you should take application requirements and the properties of its input data, such as key domain, into account when designing and implement- ing stateful operators.<br>Evolving Stateful Applications —</p>
+<ol>
+<li>Updating an application without modifying existing state</li>
+<li>Removing a state from the application</li>
+<li>modifying the state of an existing operator by changing the state primitive or data type of the state<br>Queryable State —<br>need to share their results with other applications. A common pattern is to write results into a database or key-value store and have other applications retrieve the result from that datastore. Such an architecture implies that a separate system needs to be set up and maintained, which can be a major effort, especially if this needs to be a distributed system as well.<br>Architecture and Enabling Queryable State: 3 processes. 1. the QueryablestateClient is used by an external app to submit queries and retrieve results</li>
+<li>queryableStateClientProxy accepts and serves client requests.</li>
+<li>queryableStateServer serves the requests of a client proxy.<br>Exposing queryable state<br>Querying State from external applications</li>
+</ol>
+<h2 id="Chapter-8-Reading-from-and-Writing-to-External-Systems"><a href="#Chapter-8-Reading-from-and-Writing-to-External-Systems" class="headerlink" title="Chapter 8. Reading from and Writing to External Systems"></a>Chapter 8. Reading from and Writing to External Systems</h2><p>However, just being able to read or write data to external datastores is not sufficient for a stream processor that wants to provide meaningful consistency guarantees in the case of failure.<br>Applications Consistency Guarantees — Instead, the source and sink connectors of an application need to be integrated with Flink’s checkpointing and recovery mechanism and provide certain properties to be able to give meaningful guarantees.If an application ingests data from a source connector that is not able to store and reset a reading position, it might suffer from data loss in the case of a failure and only provide at-most-once guarantees.<br>Idempotent Writes-<br>Transactional Writes-write-ahead-log(WAL)sink (At least once)and two-phase-commit(2pc) sink(exactly once)<br>Provided Connectors — provides connetors for Kafka, Kinesis, RabbitMQ….<br>Apache Kafka Source Connector (Sinker) connector, at-least-once guarantees for the kafka sink, exactly-once guarantees for kafka sink, custom partitioning and writing message timestamps, filesystem source connector, Filesystem sink connector,<br>Apache Cassandra Sink Connector<br>Implementing a custom source function,<br>Resettable source functions<br>source functions, timestamps, and watermarks<br>implementing a custom sink function<br>Idempotent Sink Connectors<br>Transactional Sink Connectors<br>GenericWriteAheadSink<br>TwoPhaseCommitSinkFunction<br>Asynchronously Accessing External Systems</p>
+<h2 id="Chapter-9-Setting-Up-Flink-for-Streaming-Applications"><a href="#Chapter-9-Setting-Up-Flink-for-Streaming-Applications" class="headerlink" title="Chapter 9. Setting Up Flink for Streaming Applications"></a>Chapter 9. Setting Up Flink for Streaming Applications</h2><p>Deployment Modes: Standalone Cluster, Docker, Apache Hadoop YARN, Kubernetes<br>Highly Available Setups — zooKeeper setup<br>HA standalone Setup<br>HA Yarn Setup<br>HA K8S setup<br>Integration with Hadoop Components<br>Filesystem Configuration: Local Filesystem, Hadoop HDFS, Amazon S3 and OpenStack Swift FS<br>System Configuration — Java and classloading, CPU, memory and network buffers, Disk Storage, Checkpointing and State Backends, Security — Kerberos authentication,<br>Chapter 10. Operating Flink and Streaming Applications<br>Running and Managing Streaming Applications — most of these features are based on SavePoints.<br>Managing Applications with the command-line client<br>Starting an application<br>Listing running applications<br>taking and disposing of a savepoint<br>Cancelling an application<br>Starting an application from a savepoint<br>scaling an application in and out<br>managing applications with REST API<br>Managing and monitoring a flink Cluster<br>Managing and monitoring a flink applications<br>Bundling and deploying application in containers —<br>Building a job-specific flink docker image<br>running a job-specific docker image on kubernetes<br>Controlling task scheduling, controlling task chaining, defining slot-sharing groups, tuning checkpointing and recovery (configuring checkpointing, enabling checkpoint compression, retaining checkpoints after an application stopped, configuring state backends, configuring recovery, restart strategies, local recovery<br>Monitoring Flink Cluster and applications — flink web UI, Metric System, Registring and Using Metircs, Metric Groups, monitoring latency,<br>Configuring the logging behavior-<br>Chapter 11: where to go from here<br>domain-specific libraries, and API for relational queries, complex event processing (CEP) and graph processing<br>The DataSet API for batching Processing<br>Table API and SQL for Relational Analysis<br>FlinkCEP for Complex Event Processing and Pattern Matching<br>Gelly for Graph Processing</p>
 
       
 
@@ -285,7 +293,7 @@ ga('send', 'pageview');
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Run-Flink-App-Jar/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -299,15 +307,20 @@ ga('send', 'pageview');
   
 <nav id="article-nav">
   
-    <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/10/29/ElasticSearch-as-Sinker-2/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Set up Local Kafka Development Environment
+          ElasticSearch as Sinker
         
       </div>
     </a>
   
+  
+    <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Set up Local Kafka Development Environment</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 

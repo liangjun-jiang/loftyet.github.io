@@ -6,17 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//flinkinpractice.com">
-  <title>Run Flink App Jar | Flink in Practice</title>
+  <title>Windows Explained by Examples | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
-<meta name="keywords" content="Flink">
+  <meta name="description" content="Apache Flink® — Stateful Computations over Data Streams. This blog provides on hands-on exampls, tutorials and end-2-end examples about Apache Flink.">
+<meta name="keywords" content="Apache Flink">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Run Flink App Jar">
-<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Run-Flink-App-Jar&#x2F;index.html">
+<meta property="og:title" content="Windows Explained by Examples">
+<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Windows-Explained-by-Examples&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+<meta property="og:description" content="Apache Flink® — Stateful Computations over Data Streams. This blog provides on hands-on exampls, tutorials and end-2-end examples about Apache Flink.">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-10-29T12:52:50.229Z">
+<meta property="og:updated_time" content="2019-10-30T01:25:17.350Z">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
@@ -164,38 +164,27 @@ ga('send', 'pageview');
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Run-Flink-App-Jar" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Windows-Explained-by-Examples" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Run Flink App Jar
+      Windows Explained by Examples
     </h1>
   
 
         
-        <a href="/2019/10/29/Run-Flink-App-Jar/" class="archive-article-date">
-  	<time datetime="2019-10-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+        <a href="/2019/10/29/Windows-Explained-by-Examples/" class="archive-article-date">
+  	<time datetime="2019-10-30T01:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Run-a-Flink-App-Jar"><a href="#Run-a-Flink-App-Jar" class="headerlink" title="Run a Flink App Jar"></a>Run a Flink App Jar</h1><p>For Flink application, there is one way to run a built jar file, also this is the way Flink recommended</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flink.streamwordcount ./target/your-target-jar-file.jar</span><br></pre></td></tr></table></figure>
-
-<p><code>com.flink.streamwordcount</code> is the main class of your Flink application.<br>Since we are used to run jar file with Java in this fashion. Just for fun, how could we still use this approach? </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar YOUR-TARGET-JAR-FILE.jar</span><br></pre></td></tr></table></figure>
-<p>To do so, we have modified your <code>pom.xml</code> a little bit, assumed you are using Flink template to generate Intelli J project<br>First of all, you might have to take <code>org.slf4j.*</code> and <code>log4j</code> from the exclude list</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">artifactSet</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">excludes</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>org.apache.flink:force-shading<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>com.google.code.findbugs:jsr305<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;org.slf4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;log4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">excludes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">artifactSet</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Second, you need to add the following line in the <code>&lt;transformers&gt;</code> section.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transformer</span> <span class="attr">implementation</span>=<span class="string">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">resource</span>&gt;</span>reference.conf<span class="tag">&lt;/<span class="name">resource</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transformer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>You can read official documentation of <a href="https://ci.apache.org/projects/flink/flink-docs-stable/dev/projectsetup/dependencies.html#appendix-template-for-building-a-jar-with-dependencies" target="_blank" rel="noopener">Configuring Dependencies, Connectors, Libraries</a> to understand more.</p>
-
+        
       
 
       
@@ -224,17 +213,6 @@ ga('send', 'pageview');
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
 
       
@@ -285,7 +263,7 @@ ga('send', 'pageview');
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Run-Flink-App-Jar/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Windows-Explained-by-Examples/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -299,15 +277,20 @@ ga('send', 'pageview');
   
 <nav id="article-nav">
   
-    <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/10/29/ElasticSearch-as-Sinker/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Set up Local Kafka Development Environment
+          ElasticSearch as Sinker
         
       </div>
     </a>
   
+  
+    <a href="/2019/10/29/ElasticSearch-as-Sinker-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ElasticSearch as Sinker</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
