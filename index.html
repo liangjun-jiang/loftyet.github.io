@@ -702,6 +702,108 @@ Each 5 seconds, the terminal will print some output, the output might look like<
 
 
   
+    <article id="post-Set-Up-Flink-on-Mac-OS-X" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/28/Set-Up-Flink-on-Mac-OS-X/">Set Up Flink on Mac OS X</a>
+    </h1>
+  
+
+        
+        <a href="/2019/10/28/Set-Up-Flink-on-Mac-OS-X/" class="archive-article-date">
+  	<time datetime="2019-10-29T04:01:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="https://ci.apache.org/projects/flink/flink-docs-release-1.9/getting-started/tutorials/local_setup.html#setup-download-and-start-flink" target="_blank" rel="noopener">Flink Official Documentation</a> has the details of set up Flink on Mac OS X. You should be able to get it working without problem. </p>
+<p>In this tutorial, we walk you through the installation with <em>Homebrew</em>.</p>
+<h2 id="Environment-Preparation"><a href="#Environment-Preparation" class="headerlink" title="Environment Preparation"></a>Environment Preparation</h2><ol>
+<li><p>Java Environment<br>Let’s make sure you have <code>Java</code> installed. We recommend <code>Java 8</code>. Open your terminal, enter</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -<span class="built_in">version</span></span><br></pre></td></tr></table></figure></li>
+<li><p>Install Flink<br>Let’s use <code>homebrew</code> install Flink. In terminal, type</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span><span class="keyword">install </span>apache-flink</span><br></pre></td></tr></table></figure>
+<p>To make sure it has been installed properly, type</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink <span class="comment">--version</span></span><br></pre></td></tr></table></figure>
+<p>My terminal tells me</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Version: <span class="number">1.9</span><span class="number">.0</span>, Commit ID: <span class="number">9</span>c32ed9</span><br></pre></td></tr></table></figure>
+<p>Good enough. </p>
+</li>
+<li><p>Start Flink Cluster<br>In terminal, enter</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$/usr/<span class="built_in">local</span>/Cellar/apache-flink/<span class="number">1.9</span><span class="number">.0</span>/libexec/bin/<span class="built_in">start</span>-cluster.sh</span><br><span class="line">Starting cluster.</span><br><span class="line">Starting standalonesession daemon <span class="keyword">on</span> <span class="title">host</span> <span class="title">d-c02xw0aljgh7</span>.</span><br><span class="line">Starting taskexecutor daemon <span class="keyword">on</span> <span class="title">host</span> <span class="title">d-c02xw0aljgh7</span>.</span><br></pre></td></tr></table></figure>
+<p>It is a good idea to write down the <code>bin</code> directory somewhere or so you can find it easily next time, or set it to <code>path</code> of your Mac OS X </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=/usr/<span class="built_in">local</span>/Cellar/apache-flink/1.9.0/libexec/bin:<span class="variable">$PATH</span></span><br><span class="line"><span class="built_in">source</span> .bash_profile  // <span class="keyword">in</span> <span class="keyword">case</span> you use .bash_profile</span><br></pre></td></tr></table></figure>
+<p>so you can just run </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">l0j011d$ <span class="keyword">start</span>-cluster.sh</span><br><span class="line"><span class="keyword">Starting</span> cluster.</span><br><span class="line"><span class="keyword">Starting</span> standalonesession daemon <span class="keyword">on</span> host d-c02xw0aljgh7.</span><br><span class="line"><span class="keyword">Starting</span> taskexecutor daemon <span class="keyword">on</span> host d-c02xw0aljgh7.</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>Take one more look at the <code>bin</code> directory, you will quickly learn how to stop the running cluster</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">stop</span>-cluster.sh</span><br><span class="line">Stopping taskexecutor daemon (pid: <span class="number">85962</span>) <span class="keyword">on</span> <span class="title">host</span> <span class="title">d-c02xw0aljgh7</span>.</span><br><span class="line">Stopping standalonesession daemon (pid: <span class="number">85533</span>) <span class="keyword">on</span> <span class="title">host</span> <span class="title">d-c02xw0aljgh7</span>.</span><br></pre></td></tr></table></figure>
+
+<p>We will come back later for other scripts.</p>
+<ol start="4">
+<li>Web UI<br>Use your favorite web browser, open <code>http://localhost:8081</code>. Happy to see some UI but not too exciting. We need to add some jobs.<br><img src="./Set-Up-Flink-on-Mac-OS-X/chapter-2-initial-flink-web-ui.png" alt="initial flink web UI"></li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/10/28/Set-Up-Flink-on-Mac-OS-X/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
 
 
