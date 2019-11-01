@@ -8,16 +8,16 @@
   <link rel="dns-prefetch" href="//flinkinpractice.com">
   <title>Book Review: Stream Processing with Apache Flink | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="An excellent book about Fink fundamentals. Can be a good reference book. Chapter 1:What’s stateful stream processingWhy stateful — 1. for event driven application, 2 data pipeline application, 3 data">
+  <meta name="description" content="An excellent book about Fink fundamentals. Can be a good reference book.">
 <meta name="keywords" content="Flink">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Book Review: Stream Processing with Apache Flink">
-<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;Book-Review-Stream-Processing-with-Apache-Flink&#x2F;index.html">
+<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;10&#x2F;Book-Review-Stream-Processing-with-Apache-Flink&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="An excellent book about Fink fundamentals. Can be a good reference book. Chapter 1:What’s stateful stream processingWhy stateful — 1. for event driven application, 2 data pipeline application, 3 data">
+<meta property="og:description" content="An excellent book about Fink fundamentals. Can be a good reference book.">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https:&#x2F;&#x2F;miro.medium.com&#x2F;max&#x2F;1000&#x2F;1*wp57DdCLpsQGAinYm5PfXQ.jpeg">
-<meta property="og:updated_time" content="2019-10-29T21:41:09.213Z">
+<meta property="og:updated_time" content="2019-11-01T03:51:02.621Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;miro.medium.com&#x2F;max&#x2F;1000&#x2F;1*wp57DdCLpsQGAinYm5PfXQ.jpeg">
   
@@ -178,8 +178,8 @@ ga('send', 'pageview');
   
 
         
-        <a href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/" class="archive-article-date">
-  	<time datetime="2019-10-29T21:35:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+        <a href="/2019/10/10/Book-Review-Stream-Processing-with-Apache-Flink/" class="archive-article-date">
+  	<time datetime="2019-10-10T21:35:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-10</time>
 </a>
         
       </header>
@@ -188,6 +188,8 @@ ga('send', 'pageview');
       
         <p><img src="https://miro.medium.com/max/1000/1*wp57DdCLpsQGAinYm5PfXQ.jpeg" alt="Book Cover: Stream Processing with Apache Flink"></p>
 <p>An excellent book about Fink fundamentals. Can be a good reference book.</p>
+<a id="more"></a>
+
 <h2 id="Chapter-1"><a href="#Chapter-1" class="headerlink" title="Chapter 1:"></a>Chapter 1:</h2><p>What’s stateful stream processing<br>Why stateful — 1. for event driven application, 2 data pipeline application, 3 data analytics application<br>how stateful — checkpoint and exact-once</p>
 <h2 id="Chapter-2-Stream-Processing-Fundamentals"><a href="#Chapter-2-Stream-Processing-Fundamentals" class="headerlink" title="Chapter 2: Stream Processing Fundamentals"></a>Chapter 2: Stream Processing Fundamentals</h2><p>Dataflow programming — dataflow graph &amp; daa parallelism &amp; task parallelism<br>Data exchange strategies — forward strategy, broadcast strategy, key-based strategy and random strategy<br>Processing streams in Parallel : Latency, throughput,<br>Operations on Data stream: stateless or stateful<br>Data ingestion and data egress — data ingestion from data sources (for example, kafaka topic), data egress to data sinks, for example, files, databases, message queues, etc<br>Transformation operations —<br>Rolling aggregation operation<br>Window operation — finite set of events called buckets; tumbling windows (count based, time based, session window such as user analytics),<br>Time semantics — processing time, event time and watermarks — a global progress metric that indicates the point in time when we are confident that no more delayed events will arrive<br>State and consistency models — state management, state partitioning, state recovery<br>Task Failures —<br>Result Guarantees — at-most-once, at-least-once, exactly-once, end-to-end exactly-once</p>
 <h2 id="Chapter-3-Architecture"><a href="#Chapter-3-Architecture" class="headerlink" title="Chapter 3: Architecture"></a>Chapter 3: Architecture</h2><p>System Architecture — leader election of highly available : Zookeeper; Apache Mesos, YARN, Kubernetes; HDFS, S3; RocksDB<br>Components of A Flink — a JobManager, a ResourceManager, a TaskManager, and a Dispatcher<br>JobManager — JobGraph, a logical dataflow graph (Execution Graph), and a JAR file.<br>TaskManagers — workers progresses of Flink<br>Dispatcher — runs across job execution<br>Deployment — Framework style (submitted your job as a Jar) and Library Style (bundle Flink and your job as a docker image)<br>Task Execution — Operators, tasks and processing slots<br>High Available Setup — zookeeper<br>TaskManager failures — JobManger ass ResourcesManager to provide more<br>JobManager failures — recover from ZooKeeper<br>Data Transfer in Flink — credit based flow control, task chaining,<br>Event-time processing — timestamp<br>Watermark propagation and event time —<br>Timestamp Assignment and watermark generation-<br>State management — operator state — list state, union list state, and broadcast state<br>Keyed state — value state, list state, and map state<br>state backends — local statement management and checkpointing state to a remote location<br>Scaling stateful operators -<br>Checkpoints, savepoints and state recovery — consistent checkpoints, recovery from a consistent checkpoint<br>Flink’s checkpointing algorithm — checkpoint barrier — carriers a checkpoint Id to identify the checkpoint it belongs to and logically splits a stream into two parts.<br>Performance Implications of Checkpointing —<br>Savepoints —<br>Using Savepoints — starting an application from a savepoint</p>
@@ -293,7 +295,7 @@ ga('send', 'pageview');
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/10/10/Book-Review-Stream-Processing-with-Apache-Flink/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -307,18 +309,18 @@ ga('send', 'pageview');
   
 <nav id="article-nav">
   
-    <a href="/2019/10/29/ElasticSearch-as-Sinker/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          ElasticSearch as Sinker
+          Set up Local Kafka Development Environment
         
       </div>
     </a>
   
   
-    <a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Set up Local Kafka Development Environment</div>
+    <a href="/2019/09/29/Windows-Explained-by-Examples/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Processing Time and Windows Explained by Examples</div>
       <i class="icon-circle-right"></i>
     </a>
   

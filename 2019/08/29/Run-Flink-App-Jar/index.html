@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="//flinkinpractice.com">
   <title>Run Flink App Jar | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+  <meta name="description" content="For Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar">
 <meta name="keywords" content="Flink">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Run Flink App Jar">
 <meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;08&#x2F;29&#x2F;Run-Flink-App-Jar&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="Run a Flink App JarFor Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar  co">
+<meta property="og:description" content="For Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-01T00:27:07.566Z">
+<meta property="og:updated_time" content="2019-11-01T03:50:30.255Z">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
@@ -184,8 +184,9 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Run-a-Flink-App-Jar"><a href="#Run-a-Flink-App-Jar" class="headerlink" title="Run a Flink App Jar"></a>Run a Flink App Jar</h1><p>For Flink application, there is one way to run a built jar file, also this is the way Flink recommended</p>
+        <p>For Flink application, there is one way to run a built jar file, also this is the way Flink recommended</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flink.streamwordcount ./target/your-target-jar-file.jar</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 
 <p><code>com.flink.streamwordcount</code> is the main class of your Flink application.<br>Since we are used to run jar file with Java in this fashion. Just for fun, how could we still use this approach? </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar YOUR-TARGET-JAR-FILE.jar</span><br></pre></td></tr></table></figure>
