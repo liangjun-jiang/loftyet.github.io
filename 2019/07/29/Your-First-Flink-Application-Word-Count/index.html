@@ -6,17 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//flinkinpractice.com">
-  <title>Archives: 2019/10 | Flink in Practice</title>
+  <title>Your First Flink Application: Word Count | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Apache Flink® — Stateful Computations over Data Streams. This blog provides on hands-on exampls, tutorials and end-2-end examples about Apache Flink.">
-<meta name="keywords" content="Apache Flink">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Flink in Practice">
-<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;archives&#x2F;2019&#x2F;10&#x2F;index.html">
+  <meta name="description" content="The first application is the famous word count big data application. The count of same word will be added up. For example, your input looks like this: 123456flink streaming word count examplewordcount">
+<meta name="keywords" content="Flink">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Your First Flink Application: Word Count">
+<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;07&#x2F;29&#x2F;Your-First-Flink-Application-Word-Count&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="Apache Flink® — Stateful Computations over Data Streams. This blog provides on hands-on exampls, tutorials and end-2-end examples about Apache Flink.">
+<meta property="og:description" content="The first application is the famous word count big data application. The count of same word will be added up. For example, your input looks like this: 123456flink streaming word count examplewordcount">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;chapter-2&#x2F;chapter-2-new-flink-project.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;chapter-2&#x2F;chapter-2-flink-application-build-success.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;chapter-2&#x2F;chapter-2-word-count-web-ui-result.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;chapter-2&#x2F;chapter-2-web-ui-detail.png">
+<meta property="og:updated_time" content="2019-11-01T00:24:43.449Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;chapter-2&#x2F;chapter-2-new-flink-project.png">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
   
@@ -163,36 +169,87 @@ ga('send', 'pageview');
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Your-First-Flink-Application-Word-Count" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Your First Flink Application: Word Count
+    </h1>
+  
+
+        
+        <a href="/2019/07/29/Your-First-Flink-Application-Word-Count/" class="archive-article-date">
+  	<time datetime="2019-07-30T00:12:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-29</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>The first application is the famous <em>word count</em> big data application. The count of same word will be added up. For example, your input looks like this:</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">flink streaming <span class="built_in">word</span> <span class="built_in">count</span> example</span><br><span class="line"><span class="built_in">word</span></span><br><span class="line"><span class="built_in">count</span></span><br><span class="line">example</span><br><span class="line">streaming</span><br><span class="line">flink</span><br></pre></td></tr></table></figure>
+<p>You are expected to see</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">flink</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">streaming</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">example</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name">example</span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name">streaming</span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name">flink</span>, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p>The order of output might be different from the above. In this example, you will enter words and press enter in a terminal, your application counts the number of words.</p>
+<h2 id="Coding-with-Intelli-J-IDE"><a href="#Coding-with-Intelli-J-IDE" class="headerlink" title="Coding with Intelli J IDE"></a>Coding with Intelli J IDE</h2><p>Open your Intelli J IDE, start from menu <code>File</code>, choose <code>New Project</code>, find the following information from the window<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-new-flink-project.png" alt="new flink project"><br>Then, put <code>groupId</code> and <code>artifactId</code> of your choice in the next window.<br>The next step is to create a new Java class, name it <code>SocketTextStreamWordCount</code>. Type the following code</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FlatMapFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SocketTextStreamWordCount</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// validating input</span></span><br><span class="line">        <span class="keyword">if</span> (args.length != <span class="number">2</span>) &#123;</span><br><span class="line">            System.err.println(<span class="string">"USAGE:\nSocketTextStreamWordCount &lt;hostname&gt; &lt;port&gt;"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String hostname = args[<span class="number">0</span>];</span><br><span class="line">        Integer port = Integer.parseInt(args[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// set up the streaming execution environment</span></span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// acquiring input</span></span><br><span class="line">        DataStreamSource&lt;String&gt; stream = env.socketTextStream(hostname, port);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// counting</span></span><br><span class="line">        SingleOutputStreamOperator&lt;Tuple2&lt;String, Integer&gt;&gt; sum = stream.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        sum.print();</span><br><span class="line"></span><br><span class="line">        env.execute(<span class="string">"Java WordCount from Sock"</span> +</span><br><span class="line">                <span class="string">""</span> +</span><br><span class="line">                <span class="string">"etTextStream Example"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LineSplitter</span> <span class="keyword">implements</span> <span class="title">FlatMapFunction</span>&lt;<span class="title">String</span>, <span class="title">Tuple2</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String s, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; collector)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            String[] tokens = s.toLowerCase().split(<span class="string">"\\W+"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (String token: tokens) &#123;</span><br><span class="line">                <span class="keyword">if</span> (token.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    collector.collect(<span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(token, <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>That’s all the code you need to write. Now we need to build and run the project. You can use the integrated <code>Terminal</code> of IntelliJ to enter </p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package -<span class="module-access"><span class="module"><span class="identifier">Dmaven</span>.</span></span>test.skip=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>Hopefully, you will see result like this:<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-flink-application-build-success.png" alt="a successful build"><br>and your build <code>jar</code> file should be located at</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./target/streaming-<span class="built_in">word</span>-<span class="built_in">count</span><span class="number">-1.0</span>-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="Test-Your-Application"><a href="#Test-Your-Application" class="headerlink" title="Test Your Application"></a>Test Your Application</h3><p>In the same window, run the following to start the <a href="https://en.wikipedia.org/wiki/Netcat" target="_blank" rel="noopener">netcat</a> client:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -l <span class="number">9000</span></span><br></pre></td></tr></table></figure>
+<p>Then start to type the following</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">flink streaming <span class="built_in">word</span> <span class="built_in">count</span> example</span><br><span class="line"><span class="built_in">word</span></span><br><span class="line"><span class="built_in">count</span></span><br><span class="line">example</span><br><span class="line">streaming</span><br><span class="line">flink</span><br></pre></td></tr></table></figure>
+<p>Don’t worry about that nothing happened every time you type and hit enter because we have not run our Flink application yet.</p>
+<p>If you have not set Flink to your <code>PATH</code>, you need to enter the following command in a new terminal window</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flinkinpratice.SocketTextStreamWordCount ./target/streaming-word-count<span class="number">-1.0</span>-SNAPSHOT.jar <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="number">9000</span></span><br></pre></td></tr></table></figure>
+<p>If you have defined a different <code>groupId</code>, replace with yours in the above command.</p>
+<p>Head to <code>http://localhost:8081</code>, you will get a little bit excited.</p>
+<p><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-word-count-web-ui-result.png" alt="word count result in Web UI"><br>We encourage you to click around to understand more what the web UI has to offer. The new web UI is quite different from the previous version.<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-web-ui-detail.png" alt="word count details">. We will go over the details in the later chapter.</p>
+<p>Now we need another terminal window to see the word count result. Find your Flink installation directory, use this:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f /usr/local/Cellar/apache-flink/<span class="number">1.9</span><span class="number">.0</span>/libexec/log/flink-l0j011d-taskexecutor<span class="number">-0</span>-m-c02xd0fljgh7.<span class="keyword">out</span></span><br></pre></td></tr></table></figure>
+<p>If you look at the directory of <code>/usr/local/Cellar/apache-flink/1.9.0/libexec/log/</code>, there are quite a few files of <code>.log</code> and <code>.out</code>. Pick the ones without suffixes of <code>.1</code>, <code>.2</code>, etc.<br>What we saw? </p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">flink</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">streaming</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">example</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name">example</span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name">streaming</span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name">flink</span>,<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p>Add more word in your <code>nc</code> terminal window, see the output in action.</p>
+<figure class="highlight"><figcaption><span>window</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch processing example</span><br></pre></td></tr></table></figure>
+<p>Your <code>tail</code> window changes to`</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">(batch,<span class="number">1</span>)</span><br><span class="line">(processing,<span class="number">1</span>)</span><br><span class="line">(example,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>In this example, we show how you can code your first streaming application: word count. We started from a IntelliJ Flink template, then write the core code, buid the application. Use <code>netcat</code> to stream your input and see the result in terminal and Flink Web UI.</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>Thank you for support<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/10/29/ElasticSearch-as-Sinker/" class="archive-article-date">
-  	<time datetime="2019-10-30T01:25:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/10/29/ElasticSearch-as-Sinker/">ElasticSearch as Sinker</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -204,171 +261,115 @@ ga('send', 'pageview');
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/07/29/Your-First-Flink-Application-Word-Count/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/10/29/Windows-Explained-by-Examples/" class="archive-article-date">
-  	<time datetime="2019-10-30T01:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2019/10/29/Run-Flink-App-Jar/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Run Flink App Jar
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/07/28/Set-Up-Flink-on-Mac-OS-X/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Set Up Flink on Mac OS X</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/10/29/Windows-Explained-by-Examples/">Processing Time and Windows Explained by Examples</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/" class="archive-article-date">
-  	<time datetime="2019-10-29T21:35:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/">Book Review: Stream Processing with Apache Flink</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/" class="archive-article-date">
-  	<time datetime="2019-10-29T19:25:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/10/29/Set-up-Local-Kafka-Development-Environment/">Set up Local Kafka Development Environment</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/10/29/Run-Flink-App-Jar/" class="archive-article-date">
-  	<time datetime="2019-10-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/10/29/Run-Flink-App-Jar/">Run Flink App Jar</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -391,8 +392,8 @@ ga('send', 'pageview');
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

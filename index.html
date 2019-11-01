@@ -209,7 +209,7 @@ ga('send', 'pageview');
 
 <h2 id="Validate-the-Results"><a href="#Validate-the-Results" class="headerlink" title="Validate the Results"></a>Validate the Results</h2><p>Head to <code>localhost:5601</code> to Kibana, log into the dashboard with <code>elastic</code> and <code>changeme</code> as username and password. The pair of credentials is the default. You might also notice we use those to authenticate with Elastic Search in the previous section. </p>
 <p>Click <code>Dev Tools</code> in the left sidebar, Type the following and run it (click the green button next to the query string)</p>
-<p><img src="./ElasticSearch-as-Sinker/es-as-sinker-validate.png" alt="elasticsearch as sinker validating"></p>
+<p><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/es-as-sinker-validate.png" alt="elasticsearch as sinker validating"></p>
 <p>Now you see the <em>index-student</em> has been indexed by Elastic Search. You want to see the student’s records. We have another query available shown in the screen above. Now you run.</p>
 <figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /<span class="built_in">index</span>-student/_<span class="built_in">search</span>?pretty</span><br></pre></td></tr></table></figure>
 <p>You will see some results as follows:</p>
@@ -702,6 +702,111 @@ Each 5 seconds, the terminal will print some output, the output might look like<
 
 
   
+    <article id="post-Your-First-Flink-Application-Word-Count" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/29/Your-First-Flink-Application-Word-Count/">Your First Flink Application: Word Count</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/29/Your-First-Flink-Application-Word-Count/" class="archive-article-date">
+  	<time datetime="2019-07-30T00:12:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>The first application is the famous <em>word count</em> big data application. The count of same word will be added up. For example, your input looks like this:</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">flink streaming <span class="built_in">word</span> <span class="built_in">count</span> example</span><br><span class="line"><span class="built_in">word</span></span><br><span class="line"><span class="built_in">count</span></span><br><span class="line">example</span><br><span class="line">streaming</span><br><span class="line">flink</span><br></pre></td></tr></table></figure>
+<p>You are expected to see</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">flink</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">streaming</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">example</span>, <span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name">example</span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name">streaming</span>, <span class="number">2</span>)</span><br><span class="line">(<span class="name">flink</span>, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p>The order of output might be different from the above. In this example, you will enter words and press enter in a terminal, your application counts the number of words.</p>
+<h2 id="Coding-with-Intelli-J-IDE"><a href="#Coding-with-Intelli-J-IDE" class="headerlink" title="Coding with Intelli J IDE"></a>Coding with Intelli J IDE</h2><p>Open your Intelli J IDE, start from menu <code>File</code>, choose <code>New Project</code>, find the following information from the window<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-new-flink-project.png" alt="new flink project"><br>Then, put <code>groupId</code> and <code>artifactId</code> of your choice in the next window.<br>The next step is to create a new Java class, name it <code>SocketTextStreamWordCount</code>. Type the following code</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FlatMapFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SocketTextStreamWordCount</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// validating input</span></span><br><span class="line">        <span class="keyword">if</span> (args.length != <span class="number">2</span>) &#123;</span><br><span class="line">            System.err.println(<span class="string">"USAGE:\nSocketTextStreamWordCount &lt;hostname&gt; &lt;port&gt;"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String hostname = args[<span class="number">0</span>];</span><br><span class="line">        Integer port = Integer.parseInt(args[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// set up the streaming execution environment</span></span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// acquiring input</span></span><br><span class="line">        DataStreamSource&lt;String&gt; stream = env.socketTextStream(hostname, port);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// counting</span></span><br><span class="line">        SingleOutputStreamOperator&lt;Tuple2&lt;String, Integer&gt;&gt; sum = stream.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        sum.print();</span><br><span class="line"></span><br><span class="line">        env.execute(<span class="string">"Java WordCount from Sock"</span> +</span><br><span class="line">                <span class="string">""</span> +</span><br><span class="line">                <span class="string">"etTextStream Example"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LineSplitter</span> <span class="keyword">implements</span> <span class="title">FlatMapFunction</span>&lt;<span class="title">String</span>, <span class="title">Tuple2</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String s, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; collector)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            String[] tokens = s.toLowerCase().split(<span class="string">"\\W+"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (String token: tokens) &#123;</span><br><span class="line">                <span class="keyword">if</span> (token.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    collector.collect(<span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(token, <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>That’s all the code you need to write. Now we need to build and run the project. You can use the integrated <code>Terminal</code> of IntelliJ to enter </p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package -<span class="module-access"><span class="module"><span class="identifier">Dmaven</span>.</span></span>test.skip=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>Hopefully, you will see result like this:<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-flink-application-build-success.png" alt="a successful build"><br>and your build <code>jar</code> file should be located at</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./target/streaming-<span class="built_in">word</span>-<span class="built_in">count</span><span class="number">-1.0</span>-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="Test-Your-Application"><a href="#Test-Your-Application" class="headerlink" title="Test Your Application"></a>Test Your Application</h3><p>In the same window, run the following to start the <a href="https://en.wikipedia.org/wiki/Netcat" target="_blank" rel="noopener">netcat</a> client:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -l <span class="number">9000</span></span><br></pre></td></tr></table></figure>
+<p>Then start to type the following</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">flink streaming <span class="built_in">word</span> <span class="built_in">count</span> example</span><br><span class="line"><span class="built_in">word</span></span><br><span class="line"><span class="built_in">count</span></span><br><span class="line">example</span><br><span class="line">streaming</span><br><span class="line">flink</span><br></pre></td></tr></table></figure>
+<p>Don’t worry about that nothing happened every time you type and hit enter because we have not run our Flink application yet.</p>
+<p>If you have not set Flink to your <code>PATH</code>, you need to enter the following command in a new terminal window</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flinkinpratice.SocketTextStreamWordCount ./target/streaming-word-count<span class="number">-1.0</span>-SNAPSHOT.jar <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="number">9000</span></span><br></pre></td></tr></table></figure>
+<p>If you have defined a different <code>groupId</code>, replace with yours in the above command.</p>
+<p>Head to <code>http://localhost:8081</code>, you will get a little bit excited.</p>
+<p><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-word-count-web-ui-result.png" alt="word count result in Web UI"><br>We encourage you to click around to understand more what the web UI has to offer. The new web UI is quite different from the previous version.<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2/chapter-2-web-ui-detail.png" alt="word count details">. We will go over the details in the later chapter.</p>
+<p>Now we need another terminal window to see the word count result. Find your Flink installation directory, use this:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f /usr/local/Cellar/apache-flink/<span class="number">1.9</span><span class="number">.0</span>/libexec/log/flink-l0j011d-taskexecutor<span class="number">-0</span>-m-c02xd0fljgh7.<span class="keyword">out</span></span><br></pre></td></tr></table></figure>
+<p>If you look at the directory of <code>/usr/local/Cellar/apache-flink/1.9.0/libexec/log/</code>, there are quite a few files of <code>.log</code> and <code>.out</code>. Pick the ones without suffixes of <code>.1</code>, <code>.2</code>, etc.<br>What we saw? </p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">flink</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">streaming</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">example</span>,<span class="number">1</span>)</span><br><span class="line">(<span class="name">word</span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">count</span></span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name">example</span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name">streaming</span>,<span class="number">2</span>)</span><br><span class="line">(<span class="name">flink</span>,<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p>Add more word in your <code>nc</code> terminal window, see the output in action.</p>
+<figure class="highlight"><figcaption><span>window</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch processing example</span><br></pre></td></tr></table></figure>
+<p>Your <code>tail</code> window changes to`</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">(batch,<span class="number">1</span>)</span><br><span class="line">(processing,<span class="number">1</span>)</span><br><span class="line">(example,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>In this example, we show how you can code your first streaming application: word count. We started from a IntelliJ Flink template, then write the core code, buid the application. Use <code>netcat</code> to stream your input and see the result in terminal and Flink Web UI.</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/29/Your-First-Flink-Application-Word-Count/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Set-Up-Flink-on-Mac-OS-X" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -709,13 +814,13 @@ Each 5 seconds, the terminal will print some output, the output might look like<
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/28/Set-Up-Flink-on-Mac-OS-X/">Set Up Flink on Mac OS X</a>
+      <a class="article-title" href="/2019/07/28/Set-Up-Flink-on-Mac-OS-X/">Set Up Flink on Mac OS X</a>
     </h1>
   
 
         
-        <a href="/2019/10/28/Set-Up-Flink-on-Mac-OS-X/" class="archive-article-date">
-  	<time datetime="2019-10-29T04:01:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-28</time>
+        <a href="/2019/07/28/Set-Up-Flink-on-Mac-OS-X/" class="archive-article-date">
+  	<time datetime="2019-07-29T04:01:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-28</time>
 </a>
         
       </header>
@@ -749,7 +854,7 @@ Each 5 seconds, the terminal will print some output, the output might look like<
 
 <p>We will come back later for other scripts.</p>
 <ol start="4">
-<li>Web UI<br>Use your favorite web browser, open <code>http://localhost:8081</code>. Happy to see some UI but not too exciting. We need to add some jobs.<br><img src="./Set-Up-Flink-on-Mac-OS-X/chapter-2-initial-flink-web-ui.png" alt="initial flink web UI"></li>
+<li>Web UI<br>Use your favorite web browser, open <code>http://localhost:8081</code>. Happy to see some UI but not too exciting. We need to add some jobs.<br><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/chapter-2-initial-flink-web-ui.png" alt="initial flink web UI"></li>
 </ol>
 
       
@@ -774,7 +879,7 @@ Each 5 seconds, the terminal will print some output, the output might look like<
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/28/Set-Up-Flink-on-Mac-OS-X/">Show All >></a>
+          <a class="article-more-a" href="/2019/07/28/Set-Up-Flink-on-Mac-OS-X/">Show All >></a>
         </p>
       
 

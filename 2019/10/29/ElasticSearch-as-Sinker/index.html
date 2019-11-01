@@ -16,10 +16,10 @@
 <meta property="og:site_name" content="Flink in Practice">
 <meta property="og:description" content="Apache Flink is commonly used for log analysis. System or Application logs are sent to Kafka topics, computed by Apache Flink to generate new Kafka messages, consumed by other systems. ElasticSearch,">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;ElasticSearch-as-Sinker&#x2F;ElasticSearch-as-Sinker&#x2F;es-as-sinker-validate.png">
-<meta property="og:updated_time" content="2019-10-30T01:58:04.384Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;es-as-sinker-validate.png">
+<meta property="og:updated_time" content="2019-11-01T00:11:24.366Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;ElasticSearch-as-Sinker&#x2F;ElasticSearch-as-Sinker&#x2F;es-as-sinker-validate.png">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;mlflowexperiments.blob.core.windows.net&#x2F;flink-in-practice-blog&#x2F;es-as-sinker-validate.png">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
   
@@ -210,7 +210,7 @@ ga('send', 'pageview');
 
 <h2 id="Validate-the-Results"><a href="#Validate-the-Results" class="headerlink" title="Validate the Results"></a>Validate the Results</h2><p>Head to <code>localhost:5601</code> to Kibana, log into the dashboard with <code>elastic</code> and <code>changeme</code> as username and password. The pair of credentials is the default. You might also notice we use those to authenticate with Elastic Search in the previous section. </p>
 <p>Click <code>Dev Tools</code> in the left sidebar, Type the following and run it (click the green button next to the query string)</p>
-<p><img src="./ElasticSearch-as-Sinker/es-as-sinker-validate.png" alt="elasticsearch as sinker validating"></p>
+<p><img src="https://mlflowexperiments.blob.core.windows.net/flink-in-practice-blog/es-as-sinker-validate.png" alt="elasticsearch as sinker validating"></p>
 <p>Now you see the <em>index-student</em> has been indexed by Elastic Search. You want to see the student’s records. We have another query available shown in the screen above. Now you run.</p>
 <figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /<span class="built_in">index</span>-student/_<span class="built_in">search</span>?pretty</span><br></pre></td></tr></table></figure>
 <p>You will see some results as follows:</p>
