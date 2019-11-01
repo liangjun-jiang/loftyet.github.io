@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>//flinkinpractice.com/2019/09/29/Windows-Explained-by-Examples/</loc>
+    
+    <lastmod>2019-11-01T00:27:18.263Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>//flinkinpractice.com/2019/08/29/Run-Flink-App-Jar/</loc>
+    
+    <lastmod>2019-11-01T00:27:07.566Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>//flinkinpractice.com/2019/07/28/Set-Up-Flink-on-Mac-OS-X/</loc>
     
     <lastmod>2019-11-01T00:24:51.784Z</lastmod>
@@ -23,13 +37,6 @@
   </url>
   
   <url>
-    <loc>//flinkinpractice.com/2019/10/29/Windows-Explained-by-Examples/</loc>
-    
-    <lastmod>2019-10-30T02:27:55.642Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>//flinkinpractice.com/2019/10/29/Book-Review-Stream-Processing-with-Apache-Flink/</loc>
     
     <lastmod>2019-10-29T21:41:09.213Z</lastmod>
@@ -40,13 +47,6 @@
     <loc>//flinkinpractice.com/2019/10/29/Set-up-Local-Kafka-Development-Environment/</loc>
     
     <lastmod>2019-10-29T19:42:11.461Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>//flinkinpractice.com/2019/10/29/Run-Flink-App-Jar/</loc>
-    
-    <lastmod>2019-10-29T12:52:50.229Z</lastmod>
     
   </url>
   

@@ -268,150 +268,6 @@ ga('send', 'pageview');
 
 
   
-    <article id="post-Windows-Explained-by-Examples" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/29/Windows-Explained-by-Examples/">Processing Time and Windows Explained by Examples</a>
-    </h1>
-  
-
-        
-        <a href="/2019/10/29/Windows-Explained-by-Examples/" class="archive-article-date">
-  	<time datetime="2019-10-30T01:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><em>Time</em> and <em>Windows</em> are two basic and important concepts in Apache Flink. Apache Flink is able to handle:</p>
-<ol>
-<li>Processing Time</li>
-<li>Event Time</li>
-<li>Ingestion Time</li>
-</ol>
-<p>On the other hand, Apache Flink provides different <em>windows</em> oepration:</p>
-<ol>
-<li>Tumbling Window</li>
-<li>Sliding Window</li>
-<li>Session Window</li>
-</ol>
-<p>The rich <em>Windows</em> APIs of Apache Flink make it possible to handle all possible operation while combining <em>Processing Time</em> and <em>Windows</em>. In this blog, we use code snippet to demonstrate the difference.</p>
-<p>In addition, there is another way to define a window characteristic: Count. We also include an example of count based window operation.</p>
-<h2 id="Processing-Time"><a href="#Processing-Time" class="headerlink" title="Processing Time"></a>Processing Time</h2><ol>
-<li><p>Keyed and Processing Time based Tumbling Windows</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// keyed and processing time based tumbling window</span></span><br><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .timeWindow(Time.seconds(<span class="number">30</span>))</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
-<p>You enter</p>
-<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">2 </span>tiger</span><br><span class="line"><span class="symbol">3 </span>tigers</span><br><span class="line"><span class="symbol">4 </span>tigers</span><br></pre></td></tr></table></figure>
-<p>wait for 30 seconds, you will see the terminal output</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">9</span>,tigers)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Keyed and Processing Time based Sliding Windows</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .timeWindow(Time.seconds(<span class="number">10</span>), Time.seconds(<span class="number">5</span>))</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
-<p>You have window size of 10 seconds, and the sliding window size of 5 seconds. It means each 5 seconds, get the sum of input of last 10 seconds. To verify this, it is a little bit tricky. Besides the <code>nc</code> terminal you have in the previous example, you also need to have a timer. Or you can count the elapsed seconds in your brain. For example, if you enter continuously,</p>
-<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">2 </span>lions</span><br><span class="line"><span class="symbol">2 </span>lions</span><br></pre></td></tr></table></figure>
-<p>In approximate 5 seconds, you will see output</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">4</span>,lions)</span><br></pre></td></tr></table></figure>
-<p>Then in another approximate 5 seconds, you will see another output</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">4</span>,lions)</span><br></pre></td></tr></table></figure>
-<p>What’s the use case of <em>sliding window</em>? </p>
-</li>
-<li><p>Keyed and Count based Tumbling Window</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// keyed and count based on tumbling window</span></span><br><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .countWindow(<span class="number">3</span>)</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
-<p>Do the sum for the last 3 items. </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2 cats</span><br><span class="line">2 cats</span><br><span class="line">3 cats</span><br><span class="line">4 cats</span><br></pre></td></tr></table></figure>
-<p>The output will be:</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">7</span>,cats)</span><br></pre></td></tr></table></figure></li>
-<li><p>Keyed and Count based Sliding Window</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  keyed and count based on sliding window</span></span><br><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .countWindow(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
-<p>This is sum the last 4 items for each 3 items. Since this is keyed operation, it needs to have the same key to be counted. For example, your input is</p>
-<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">2 </span>cats</span><br><span class="line"><span class="symbol">3 </span>dogs</span><br><span class="line"><span class="symbol">5 </span>lions</span><br><span class="line"><span class="symbol">6 </span>tigers</span><br></pre></td></tr></table></figure>
-<p>You will expect nothing to be happened.<br>If you continue to enter</p>
-<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">7 </span>mice</span><br><span class="line"><span class="symbol">8 </span>mice</span><br><span class="line"><span class="symbol">9 </span>mice</span><br><span class="line"><span class="symbol">10 </span>mice</span><br></pre></td></tr></table></figure>
-<p>By the time you finished entering <code>9 mice</code>, a result is output</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">24</span>, mice)</span><br></pre></td></tr></table></figure></li>
-<li><p>Keyed and Processing Time based Session Window</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    <span class="comment">// the session window is set to 5 seconds, the sum will be calculated if no more data in the 5 seconds</span></span><br><span class="line">    .window(ProcessingTimeSessionWindows.withGap(Time.seconds(<span class="number">5</span>))) </span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
-<p>Enter the following in the terminal window, then wait for 5 seconds</p>
-<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">5 </span>lions</span><br></pre></td></tr></table></figure>
-<p>The output will be printed in approximate 5 seconds</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">5</span>,lions)</span><br></pre></td></tr></table></figure>
-<p>Try different input and watch out the output carefully. You might wonder what’s the difference between the tumbling window and the session window.</p>
-<blockquote>
-<p><a href="https://ci.apache.org/projects/flink/flink-docs-stable/dev/stream/operators/windows.html" target="_blank" rel="noopener">The session windows assigner groups elements by sessions of activity. Session windows do not overlap and do not have a fixed start and end time, in contrast to tumbling windows and sliding windows. Instead a session window closes when it does not receive elements for a certain period of time, i.e., when a gap of inactivity occurred. A session window assigner can be configured with either a static session gap or with a session gap extractor function which defines how long the period of inactivity is. When this period expires, the current session closes and subsequent elements are assigned to a new session window.</a></p>
-</blockquote>
-</li>
-<li><p>Non-Keyed and Processing Time based windowAll Window</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dataStream.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">        .timeWindowAll(Time.seconds(<span class="number">10</span>))</span><br><span class="line">        .sum(<span class="number">0</span>)</span><br><span class="line">        .print();</span><br></pre></td></tr></table></figure>
-<p>You enter</p>
-<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">3 </span>dogs</span><br><span class="line"><span class="symbol">5 </span>cats</span><br><span class="line"><span class="symbol">11 </span>lions</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>The output is </p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">19</span>,dogs)</span><br></pre></td></tr></table></figure>
-
-<ol start="6">
-<li>Keyed and Event Time based Tumbling Window and Watermark<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">  env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">  DataStream&lt;WordEvent&gt; data = env.addSource(<span class="keyword">new</span> CustomSource())</span><br><span class="line">          .assignTimestampsAndWatermarks(<span class="keyword">new</span> AssignerWithPeriodicWatermarks&lt;WordEvent&gt;() &#123;</span><br><span class="line">              <span class="keyword">private</span> <span class="keyword">long</span> currentTimestamp = Long.MIN_VALUE;</span><br><span class="line">              <span class="meta">@Nullable</span></span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">public</span> Watermark <span class="title">getCurrentWatermark</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                  <span class="keyword">return</span> <span class="keyword">new</span> Watermark(currentTimestamp == Long.MIN_VALUE ? Long.MIN_VALUE : currentTimestamp - <span class="number">1</span>);</span><br><span class="line">              &#125;</span><br><span class="line"></span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractTimestamp</span><span class="params">(WordEvent element, <span class="keyword">long</span> previousElementTimestamp)</span> </span>&#123;</span><br><span class="line">                  <span class="keyword">if</span> (element.getTimestamp() &gt; currentTimestamp) &#123;</span><br><span class="line">                      <span class="keyword">this</span>.currentTimestamp = element.getTimestamp();</span><br><span class="line">                  &#125;</span><br><span class="line">                  <span class="keyword">return</span> currentTimestamp;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;);</span><br><span class="line"></span><br><span class="line">  data.keyBy(WordEvent::getWord)</span><br><span class="line">          .timeWindow(Time.seconds(<span class="number">5</span>))</span><br><span class="line">          .sum(<span class="string">"count"</span>)</span><br><span class="line">          .print();</span><br><span class="line"></span><br><span class="line">  env.execute(<span class="string">"keyed and event based tumbling window"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-Each 5 seconds, the terminal will print some output, the output might look like<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">9&gt; </span>WordEvent(word=flinkinpracticeF, count=<span class="number">12</span>, timestamp=<span class="number">1571171275592</span>)</span><br><span class="line"><span class="meta">8&gt; </span>WordEvent(word=flinkinpracticeA, count=<span class="number">8</span>, timestamp=<span class="number">1571171277598</span>)</span><br><span class="line"><span class="meta">8&gt; </span>WordEvent(word=flinkinpracticeA, count=<span class="number">5</span>, timestamp=<span class="number">1571171283620</span>)</span><br><span class="line"><span class="meta">9&gt; </span>WordEvent(word=flinkinpracticeF, count=<span class="number">1</span>, timestamp=<span class="number">1571171280610</span>)</span><br></pre></td></tr></table></figure></li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/29/Windows-Explained-by-Examples/">Show All >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-Book-Review-Stream-Processing-with-Apache-Flink" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -618,6 +474,150 @@ Each 5 seconds, the terminal will print some output, the output might look like<
 
 
   
+    <article id="post-Windows-Explained-by-Examples" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/29/Windows-Explained-by-Examples/">Processing Time and Windows Explained by Examples</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/29/Windows-Explained-by-Examples/" class="archive-article-date">
+  	<time datetime="2019-09-30T01:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><em>Time</em> and <em>Windows</em> are two basic and important concepts in Apache Flink. Apache Flink is able to handle:</p>
+<ol>
+<li>Processing Time</li>
+<li>Event Time</li>
+<li>Ingestion Time</li>
+</ol>
+<p>On the other hand, Apache Flink provides different <em>windows</em> oepration:</p>
+<ol>
+<li>Tumbling Window</li>
+<li>Sliding Window</li>
+<li>Session Window</li>
+</ol>
+<p>The rich <em>Windows</em> APIs of Apache Flink make it possible to handle all possible operation while combining <em>Processing Time</em> and <em>Windows</em>. In this blog, we use code snippet to demonstrate the difference.</p>
+<p>In addition, there is another way to define a window characteristic: Count. We also include an example of count based window operation.</p>
+<h2 id="Processing-Time"><a href="#Processing-Time" class="headerlink" title="Processing Time"></a>Processing Time</h2><ol>
+<li><p>Keyed and Processing Time based Tumbling Windows</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// keyed and processing time based tumbling window</span></span><br><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .timeWindow(Time.seconds(<span class="number">30</span>))</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+<p>You enter</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">2 </span>tiger</span><br><span class="line"><span class="symbol">3 </span>tigers</span><br><span class="line"><span class="symbol">4 </span>tigers</span><br></pre></td></tr></table></figure>
+<p>wait for 30 seconds, you will see the terminal output</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">9</span>,tigers)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Keyed and Processing Time based Sliding Windows</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .timeWindow(Time.seconds(<span class="number">10</span>), Time.seconds(<span class="number">5</span>))</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+<p>You have window size of 10 seconds, and the sliding window size of 5 seconds. It means each 5 seconds, get the sum of input of last 10 seconds. To verify this, it is a little bit tricky. Besides the <code>nc</code> terminal you have in the previous example, you also need to have a timer. Or you can count the elapsed seconds in your brain. For example, if you enter continuously,</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">2 </span>lions</span><br><span class="line"><span class="symbol">2 </span>lions</span><br></pre></td></tr></table></figure>
+<p>In approximate 5 seconds, you will see output</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">4</span>,lions)</span><br></pre></td></tr></table></figure>
+<p>Then in another approximate 5 seconds, you will see another output</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">4</span>,lions)</span><br></pre></td></tr></table></figure>
+<p>What’s the use case of <em>sliding window</em>? </p>
+</li>
+<li><p>Keyed and Count based Tumbling Window</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// keyed and count based on tumbling window</span></span><br><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .countWindow(<span class="number">3</span>)</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+<p>Do the sum for the last 3 items. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2 cats</span><br><span class="line">2 cats</span><br><span class="line">3 cats</span><br><span class="line">4 cats</span><br></pre></td></tr></table></figure>
+<p>The output will be:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">7</span>,cats)</span><br></pre></td></tr></table></figure></li>
+<li><p>Keyed and Count based Sliding Window</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  keyed and count based on sliding window</span></span><br><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    .countWindow(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+<p>This is sum the last 4 items for each 3 items. Since this is keyed operation, it needs to have the same key to be counted. For example, your input is</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">2 </span>cats</span><br><span class="line"><span class="symbol">3 </span>dogs</span><br><span class="line"><span class="symbol">5 </span>lions</span><br><span class="line"><span class="symbol">6 </span>tigers</span><br></pre></td></tr></table></figure>
+<p>You will expect nothing to be happened.<br>If you continue to enter</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">7 </span>mice</span><br><span class="line"><span class="symbol">8 </span>mice</span><br><span class="line"><span class="symbol">9 </span>mice</span><br><span class="line"><span class="symbol">10 </span>mice</span><br></pre></td></tr></table></figure>
+<p>By the time you finished entering <code>9 mice</code>, a result is output</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">24</span>, mice)</span><br></pre></td></tr></table></figure></li>
+<li><p>Keyed and Processing Time based Session Window</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">    .keyBy(<span class="number">1</span>)</span><br><span class="line">    <span class="comment">// the session window is set to 5 seconds, the sum will be calculated if no more data in the 5 seconds</span></span><br><span class="line">    .window(ProcessingTimeSessionWindows.withGap(Time.seconds(<span class="number">5</span>))) </span><br><span class="line">    .sum(<span class="number">0</span>)</span><br><span class="line">    .print();</span><br></pre></td></tr></table></figure>
+<p>Enter the following in the terminal window, then wait for 5 seconds</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">5 </span>lions</span><br></pre></td></tr></table></figure>
+<p>The output will be printed in approximate 5 seconds</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">5</span>,lions)</span><br></pre></td></tr></table></figure>
+<p>Try different input and watch out the output carefully. You might wonder what’s the difference between the tumbling window and the session window.</p>
+<blockquote>
+<p><a href="https://ci.apache.org/projects/flink/flink-docs-stable/dev/stream/operators/windows.html" target="_blank" rel="noopener">The session windows assigner groups elements by sessions of activity. Session windows do not overlap and do not have a fixed start and end time, in contrast to tumbling windows and sliding windows. Instead a session window closes when it does not receive elements for a certain period of time, i.e., when a gap of inactivity occurred. A session window assigner can be configured with either a static session gap or with a session gap extractor function which defines how long the period of inactivity is. When this period expires, the current session closes and subsequent elements are assigned to a new session window.</a></p>
+</blockquote>
+</li>
+<li><p>Non-Keyed and Processing Time based windowAll Window</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dataStream.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">        .timeWindowAll(Time.seconds(<span class="number">10</span>))</span><br><span class="line">        .sum(<span class="number">0</span>)</span><br><span class="line">        .print();</span><br></pre></td></tr></table></figure>
+<p>You enter</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">3 </span>dogs</span><br><span class="line"><span class="symbol">5 </span>cats</span><br><span class="line"><span class="symbol">11 </span>lions</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>The output is </p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name">19</span>,dogs)</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>Keyed and Event Time based Tumbling Window and Watermark<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">  env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line">  DataStream&lt;WordEvent&gt; data = env.addSource(<span class="keyword">new</span> CustomSource())</span><br><span class="line">          .assignTimestampsAndWatermarks(<span class="keyword">new</span> AssignerWithPeriodicWatermarks&lt;WordEvent&gt;() &#123;</span><br><span class="line">              <span class="keyword">private</span> <span class="keyword">long</span> currentTimestamp = Long.MIN_VALUE;</span><br><span class="line">              <span class="meta">@Nullable</span></span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">public</span> Watermark <span class="title">getCurrentWatermark</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                  <span class="keyword">return</span> <span class="keyword">new</span> Watermark(currentTimestamp == Long.MIN_VALUE ? Long.MIN_VALUE : currentTimestamp - <span class="number">1</span>);</span><br><span class="line">              &#125;</span><br><span class="line"></span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractTimestamp</span><span class="params">(WordEvent element, <span class="keyword">long</span> previousElementTimestamp)</span> </span>&#123;</span><br><span class="line">                  <span class="keyword">if</span> (element.getTimestamp() &gt; currentTimestamp) &#123;</span><br><span class="line">                      <span class="keyword">this</span>.currentTimestamp = element.getTimestamp();</span><br><span class="line">                  &#125;</span><br><span class="line">                  <span class="keyword">return</span> currentTimestamp;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;);</span><br><span class="line"></span><br><span class="line">  data.keyBy(WordEvent::getWord)</span><br><span class="line">          .timeWindow(Time.seconds(<span class="number">5</span>))</span><br><span class="line">          .sum(<span class="string">"count"</span>)</span><br><span class="line">          .print();</span><br><span class="line"></span><br><span class="line">  env.execute(<span class="string">"keyed and event based tumbling window"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+Each 5 seconds, the terminal will print some output, the output might look like<figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">9&gt; </span>WordEvent(word=flinkinpracticeF, count=<span class="number">12</span>, timestamp=<span class="number">1571171275592</span>)</span><br><span class="line"><span class="meta">8&gt; </span>WordEvent(word=flinkinpracticeA, count=<span class="number">8</span>, timestamp=<span class="number">1571171277598</span>)</span><br><span class="line"><span class="meta">8&gt; </span>WordEvent(word=flinkinpracticeA, count=<span class="number">5</span>, timestamp=<span class="number">1571171283620</span>)</span><br><span class="line"><span class="meta">9&gt; </span>WordEvent(word=flinkinpracticeF, count=<span class="number">1</span>, timestamp=<span class="number">1571171280610</span>)</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Flink</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/29/Windows-Explained-by-Examples/">Show All >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Run-Flink-App-Jar" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -625,13 +625,13 @@ Each 5 seconds, the terminal will print some output, the output might look like<
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/29/Run-Flink-App-Jar/">Run Flink App Jar</a>
+      <a class="article-title" href="/2019/08/29/Run-Flink-App-Jar/">Run Flink App Jar</a>
     </h1>
   
 
         
-        <a href="/2019/10/29/Run-Flink-App-Jar/" class="archive-article-date">
-  	<time datetime="2019-10-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+        <a href="/2019/08/29/Run-Flink-App-Jar/" class="archive-article-date">
+  	<time datetime="2019-08-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
 </a>
         
       </header>
@@ -672,7 +672,7 @@ Each 5 seconds, the terminal will print some output, the output might look like<
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/29/Run-Flink-App-Jar/">Show All >></a>
+          <a class="article-more-a" href="/2019/08/29/Run-Flink-App-Jar/">Show All >></a>
         </p>
       
 
