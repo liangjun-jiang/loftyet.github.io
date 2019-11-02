@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>//flinkinpractice.com/2019/09/21/Stream-Split/</loc>
+    
+    <lastmod>2019-11-02T13:14:58.899Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>//flinkinpractice.com/2019/10/29/ElasticSearch-as-Sinker/</loc>
+    
+    <lastmod>2019-11-02T13:08:23.272Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>//flinkinpractice.com/2019/08/01/Flink-Batch-Processing-Word-Count/</loc>
     
     <lastmod>2019-11-02T02:36:36.654Z</lastmod>
@@ -12,13 +26,6 @@
     <loc>//flinkinpractice.com/2019/10/10/Book-Review-Stream-Processing-with-Apache-Flink/</loc>
     
     <lastmod>2019-11-01T03:51:02.621Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>//flinkinpractice.com/2019/10/29/ElasticSearch-as-Sinker/</loc>
-    
-    <lastmod>2019-11-01T03:50:43.158Z</lastmod>
     
   </url>
   

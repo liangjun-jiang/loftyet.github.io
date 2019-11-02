@@ -6,17 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//flinkinpractice.com">
-  <title>Run Flink App Jar | Flink in Practice</title>
+  <title>Stream Split | Flink in Practice</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="For Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar">
+  <meta name="description" content="Here is a use case. Our data source is a stream of alerts. The alert has two properties: one is where it is from, docker container, middle ware or server health check, the other is the alert status, s">
 <meta name="keywords" content="Flink">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Run Flink App Jar">
-<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;08&#x2F;29&#x2F;Run-Flink-App-Jar&#x2F;index.html">
+<meta property="og:title" content="Stream Split">
+<meta property="og:url" content="&#x2F;&#x2F;flinkinpractice.com&#x2F;2019&#x2F;09&#x2F;21&#x2F;Stream-Split&#x2F;index.html">
 <meta property="og:site_name" content="Flink in Practice">
-<meta property="og:description" content="For Flink application, there is one way to run a built jar file, also this is the way Flink recommended 1flink run -c com.flink.streamwordcount .&#x2F;target&#x2F;your-target-jar-file.jar">
+<meta property="og:description" content="Here is a use case. Our data source is a stream of alerts. The alert has two properties: one is where it is from, docker container, middle ware or server health check, the other is the alert status, s">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-01T03:50:30.255Z">
+<meta property="og:updated_time" content="2019-11-02T13:14:58.899Z">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Flink in Practice" type="application/atom+xml">
@@ -164,38 +164,37 @@ ga('send', 'pageview');
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Run-Flink-App-Jar" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Stream-Split" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Run Flink App Jar
+      Stream Split
     </h1>
   
 
         
-        <a href="/2019/08/29/Run-Flink-App-Jar/" class="archive-article-date">
-  	<time datetime="2019-08-29T12:35:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
+        <a href="/2019/09/21/Stream-Split/" class="archive-article-date">
+  	<time datetime="2019-09-21T13:10:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-21</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>For Flink application, there is one way to run a built jar file, also this is the way Flink recommended</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.flink.streamwordcount ./target/your-target-jar-file.jar</span><br></pre></td></tr></table></figure>
+        <p>Here is a use case. Our data source is a stream of alerts. The alert has two properties: one is where it is from, docker container, middle ware or server health check, the other is the alert status, still warning or recovering. In the end, we want to pay close attention to the recovering status of alert coming from middle ware. </p>
+<p>Here is the code snippet for tackling this problem.</p>
+<!-- The following diagram shows how we want to tackle the problem. -->
+
 <a id="more"></a>
 
-<p><code>com.flink.streamwordcount</code> is the main class of your Flink application.<br>Since we are used to run jar file with Java in this fashion. Just for fun, how could we still use this approach? </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar YOUR-TARGET-JAR-FILE.jar</span><br></pre></td></tr></table></figure>
-<p>To do so, we have modified your <code>pom.xml</code> a little bit, assumed you are using Flink template to generate Intelli J project<br>First of all, you might have to take <code>org.slf4j.*</code> and <code>log4j</code> from the exclude list</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">artifactSet</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">excludes</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>org.apache.flink:force-shading<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>com.google.code.findbugs:jsr305<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;org.slf4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">      <span class="comment">&lt;!--&lt;exclude&gt;log4j:*&lt;/exclude&gt;--&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">excludes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">artifactSet</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>Second, you need to add the following line in the <code>&lt;transformers&gt;</code> section.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transformer</span> <span class="attr">implementation</span>=<span class="string">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">resource</span>&gt;</span>reference.conf<span class="tag">&lt;/<span class="name">resource</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transformer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<!-- [split diagram](../../images/part-ii/chapter8/split-diagram.jpg) -->
 
-<p>You can read official documentation of <a href="https://ci.apache.org/projects/flink/flink-docs-stable/dev/projectsetup/dependencies.html#appendix-template-for-building-a-jar-with-dependencies" target="_blank" rel="noopener">Configuring Dependencies, Connectors, Libraries</a> to understand more.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FilterFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.collector.selector.OutputSelector;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.SplitStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataStreamSplit</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> ParameterTool params = ParameterTool.fromArgs(args);</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">long</span> rate = params.getLong(<span class="string">"rate"</span>, <span class="number">3L</span>);</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        env.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        DataStream&lt;Tuple2&lt;String, String&gt;&gt; alertsStream = AlertSource.getSource(env, rate);</span><br><span class="line"></span><br><span class="line">        SplitStream&lt;Tuple2&lt;String, String&gt;&gt; splitStream = alertsStream.split(<span class="keyword">new</span> OutputSelector&lt;Tuple2&lt;String, String&gt;&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">select</span><span class="params">(Tuple2&lt;String, String&gt; alertTuple)</span> </span>&#123;</span><br><span class="line">                List&lt;String&gt; tags = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                <span class="keyword">switch</span> (alertTuple.f0) &#123;</span><br><span class="line">                    <span class="keyword">case</span> <span class="string">"DOCKER"</span>:</span><br><span class="line">                        tags.add(<span class="string">"DOCKER"</span>);</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> <span class="string">"MIDDLE_WARE"</span>:</span><br><span class="line">                        tags.add(<span class="string">"MIDDLE_WARE"</span>);</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> <span class="string">"HEALTH_CHECK"</span>:</span><br><span class="line">                        tags.add(<span class="string">"HEALTH_CHECK"</span>);</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> tags;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        DataStream&lt;Tuple2&lt;String, String&gt;&gt; middlewareStream = splitStream.select(<span class="string">"MIDDLE_WARE"</span>);</span><br><span class="line"></span><br><span class="line">        middlewareStream.filter(<span class="keyword">new</span> FilterFunction&lt;Tuple2&lt;String, String&gt;&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">filter</span><span class="params">(Tuple2&lt;String, String&gt; alertTuple)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> alertTuple.f1.equalsIgnoreCase(<span class="string">"RECOVERING"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).print();</span><br><span class="line"></span><br><span class="line">        env.execute(<span class="string">"Split and filter with Flink"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>If you run this piece of code with IntelliJ, it might show that <code>SplitStream</code> class has been marked as deprecated. To achieve the same goal, Flink now suggests to use <code>Side Ouput</code>. </p>
 
       
 
@@ -286,7 +285,7 @@ ga('send', 'pageview');
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/08/29/Run-Flink-App-Jar/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://flinkinpractice.com/2019/09/21/Stream-Split/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -300,18 +299,18 @@ ga('send', 'pageview');
   
 <nav id="article-nav">
   
-    <a href="/2019/09/21/Stream-Split/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/09/29/Windows-Explained-by-Examples/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Stream Split
+          Processing Time and Windows Explained by Examples
         
       </div>
     </a>
   
   
-    <a href="/2019/08/01/Flink-Batch-Processing-Word-Count/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Flink Batch Processing: Word Count</div>
+    <a href="/2019/08/29/Run-Flink-App-Jar/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Run Flink App Jar</div>
       <i class="icon-circle-right"></i>
     </a>
   
