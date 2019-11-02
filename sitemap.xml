@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>//flinkinpractice.com/2019/08/01/Flink-Batch-Processing-Word-Count/</loc>
+    
+    <lastmod>2019-11-02T02:36:36.654Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>//flinkinpractice.com/2019/10/10/Book-Review-Stream-Processing-with-Apache-Flink/</loc>
     
     <lastmod>2019-11-01T03:51:02.621Z</lastmod>
